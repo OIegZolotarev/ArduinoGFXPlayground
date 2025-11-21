@@ -1,10 +1,11 @@
 #include <SDL2/SDL.h>
 #include "Arduino_Canvas.h"
-
-#define TFT_W 480
-#define TFT_H 272
+#include "ui_controller.h"
+#include <chrono>
+#include "timer.h"
 
 Arduino_Canvas canvas(TFT_W, TFT_H, NULL); // драйвер не нужен, мы сами сливаем буфер
+Arduino_GFX * gfx = &canvas;
 
 int main(int argc, char* argv[])
 {
@@ -17,7 +18,7 @@ int main(int argc, char* argv[])
         SDL_WINDOW_SHOWN
     );
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RendererFlags::SDL_RENDERER_PRESENTVSYNC);
 
     SDL_Texture* texture = SDL_CreateTexture(
         renderer,
@@ -28,12 +29,10 @@ int main(int argc, char* argv[])
 
     // ArduinoCanvas init
     canvas.begin();
+    timerStart();
 
     bool running = true;
     SDL_Event event;
-
-    int x = 0;
-    int dx = 1;
 
     while (running)
     {
@@ -43,26 +42,7 @@ int main(int argc, char* argv[])
                 running = false;
         }
 
-        // -----------------------------------------
-        // --- РИСУЕМ ТАК ЖЕ, КАК НА МИКОКОНТРОЛЛЕРЕ ---
-        // -----------------------------------------
-
-        canvas.fillScreen(RGB565_BLACK);
-        canvas.setCursor(10, 20);
-        canvas.setTextSize(2);
-        canvas.setTextColor(RGB565_WHITE);
-
-        canvas.print("Hello World!\n");
-
-        canvas.fillCircle(x, 150, 80, RGB565_RED);
-
-        x += dx;
-        if (x < 0 || x + 80 >= TFT_W)
-            dx = -dx;
-
-        // -----------------------------------------
-        // --- ВЫВОД НА ЭКРАН SDL ---
-        // -----------------------------------------
+        DrawUI();
 
         uint16_t* fb = canvas.getFramebuffer();
 
@@ -71,7 +51,8 @@ int main(int argc, char* argv[])
         SDL_RenderCopy(renderer, texture, nullptr, nullptr);
         SDL_RenderPresent(renderer);
 
-        SDL_Delay(16); // ~60 fps
+        timerUpdate();
+        
     }
 
     SDL_DestroyTexture(texture);

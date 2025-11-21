@@ -3,15 +3,22 @@
   "configurations": [
     {
       "name": "Launch your_app (CMake/MSVC)",
-      "type": "cppvsdbg",      
+      "type": "cppvsdbg",
       "request": "launch",
       "program": "${command:cmake.launchTargetPath}",
       "args": [],
       "stopAtEntry": false,
-      "cwd": "${workspaceRoot}",           
+      "cwd": "${workspaceRoot}",
       "environment": [],
-      "console": "externalTerminal",     
-      // "preLaunchTask": "CMake: build"
+      "console": "externalTerminal"
+    },
+    {
+      "type": "cmake",
+      "request": "launch",
+      "name": "Debug portfile(s)",
+      "cmakeDebugType": "external",
+      "pipeName": "\\\\.\\pipe\\vcpkg_ext_portfile_dbg",
+      "preLaunchTask": "Debug vcpkg commands"
     }
   ],
   "compounds": [

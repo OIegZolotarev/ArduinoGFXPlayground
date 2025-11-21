@@ -52,7 +52,11 @@ class Print
       if (str == NULL) return 0;
       return write((const uint8_t *)str, strlen(str));
     }
-    virtual size_t write(const uint8_t *buffer, size_t size) { return 0;};
+    
+    virtual size_t write(const uint8_t *buffer, size_t size) { 
+      return 0;
+    };
+
     size_t write(const char *buffer, size_t size) {
       return write((const uint8_t *)buffer, size);
     }
@@ -62,9 +66,18 @@ class Print
     virtual int availableForWrite() { return 0; }
 
     
-    size_t print(const char p[])
+    virtual size_t print(const char p[])
     {
-        return printf(p);
+        char * c = (char*) p;
+        size_t r = 0;
+        while(*c)
+        {
+          write(*c);
+          r++;
+          c++;
+        }
+
+        return r;
     }
 
     size_t print(char);
