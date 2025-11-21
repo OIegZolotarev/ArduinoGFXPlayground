@@ -1,0 +1,6 @@
+[submodule "arduino_gfx"]
+	path = arduino_gfx
+	url = https://github.com/moononournation/Arduino_GFX
+[submodule "Arduino_GFX_SDL"]
+	path = Arduino_GFX_SDL
+	url = https://github.com/OIegZolotarev/Arduino_GFX_SDL
