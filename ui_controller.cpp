@@ -5,7 +5,7 @@
 
 extern Arduino_GFX * gfx;
 
-int dx = 1;
+UIState* g_uiState;
 
 vec2i getTextBounds(const char* text)
 {
@@ -55,7 +55,7 @@ void drawFunctionalButtons(functionalButton_t * items, int y)
 {
     int x = 0;
 
-    bool flash = (millis()  % 1000) > 500;
+    
 
     for(int i = 0 ; i < 4; i++)
     {
@@ -64,7 +64,7 @@ void drawFunctionalButtons(functionalButton_t * items, int y)
         y,
         TFT_W / 4,
         items[i].outline_color,
-        items[i].text_color, flash);
+        items[i].text_color, items[i].flags & FB_HIGHLIGHT);
 
         x += w;
     }
@@ -74,8 +74,10 @@ void drawMusicTrackName(const char* track, int x, int y)
 {
     vec2i bounds = getTextBounds(track);
 
-    bounds.x = 32 * 30;
+    
     int stringLen = strlen(track);
+
+    bounds.x = stringLen * 30;
     int charsLeft = stringLen;
     int charSize = bounds.x / charsLeft;
 
@@ -100,40 +102,125 @@ void drawMusicTrackName(const char* track, int x, int y)
     
 }
 
-void DrawUI()
+void UIState::render()
 {
-
-    functionalButton_t items[4];
-
-    items[0].description = "Gauges";
-    items[0].outline_color = RGB565_RED;
-    items[0].text_color = RGB565_YELLOW;
-
-    items[1].description = "Tune";
-    items[1].outline_color = RGB565_GREEN;
-    items[1].text_color = RGB565_YELLOW;
-
-
-    items[2].description = "Media";
-    items[2].outline_color = RGB565_BLUE;
-    items[2].text_color = RGB565_YELLOW;
-
-    items[3].description = "Settings";
-    items[3].outline_color = RGB565_MAGENTA;
-    items[3].text_color = RGB565_YELLOW;
-
-
     gfx->fillScreen(RGB565_BLACK);
     gfx->setTextSize(2);
 
-    drawFunctionalButtons(items, 1);
+    drawFunctionalButtons(g_uiState->getFunctionalButtons(), 1);
 
+    switch(state)    
+    {
+    case UIFunctionsState::Gauges:
+        stateGauges();
+        break;
+    case UIFunctionsState::Media:
+        stateMedia();
+        break;
+    case UIFunctionsState::Tune:
+        break;
+    case UIFunctionsState::Settings:
+        break;
+    }
+
+}
+
+void UIState::stateGauges()
+{
+    
+}
+
+void UIState::stateMedia()
+{    
     gfx->setTextSize(2);
     gfx->setCursor(0,100);
     gfx->print("Now playing:");
+    gfx->setTextSize(5);
 
-    gfx->setTextSize(5);    
-    drawMusicTrackName("BREAK IN2 THE NITE (Ileus Remix)",0,120);
-    // gfx->print("M.O.V.E");
+    gfx->setTextColor(RGB565_AQUA);
 
+    drawMusicTrackName(mediaState.trackName,0,120);
+
+    int y = TFT_H - 24;
+
+
+    gfx->setTextColor(RGB565_BLUEVIOLET);
+
+    gfx->setTextSize(3);
+    gfx->setCursor(0,y);
+    gfx->print("0:00");
+
+    gfx->fillRect(18*4, y, TFT_W - 18*8, 24, RGB565_CHARTREUSE);
+
+    gfx->setCursor(TFT_W - 18*4,y);
+    gfx->print("4:53");
+
+}
+
+void drawGauges()
+{
+
+}
+
+UIState::UIState()
+{
+    buttons[0].description = "Gauges";
+    buttons[0].outline_color = RGB565_RED;
+    buttons[0].text_color = RGB565_YELLOW;
+
+    buttons[1].description = "Tune";
+    buttons[1].outline_color = RGB565_GREEN;
+    buttons[1].text_color = RGB565_YELLOW;
+
+    buttons[2].description = "Media";
+    buttons[2].outline_color = RGB565_BLUE;
+    buttons[2].text_color = RGB565_YELLOW;
+
+    buttons[3].description = "Settings";
+    buttons[3].outline_color = RGB565_MAGENTA;
+    buttons[3].text_color = RGB565_YELLOW;    
+    
+    selectFunction(2);
+
+    updateTrackState("music06.mp3", 100, 300);
+}
+
+void UIState::selectFunction(int funcId)
+{
+    for(int i = 0 ; i < 4; i++)
+    {
+        buttons[i].flags &= ~FB_HIGHLIGHT;
+    }
+
+    buttons[funcId].flags |= FB_HIGHLIGHT;
+
+    state = (UIFunctionsState)funcId;
+}
+
+
+void UIState::handlePhysicalButton(PhysicalButtons btnId)
+{
+    switch(btnId)    
+    {
+    case PhysicalButtons::FUNC1:
+        selectFunction(0);
+        break;
+    case PhysicalButtons::FUNC2:
+        selectFunction(1);
+        break;
+    case PhysicalButtons::FUNC3:
+        selectFunction(2);
+        break;        
+    case PhysicalButtons::FUNC4:
+        selectFunction(3);
+        break;
+    }
+}
+
+void UIState::updateTrackState(const char* trackName, int pos, int length)
+{
+    strncpy(mediaState.trackName, trackName, sizeof(mediaState.trackName));
+
+    mediaState.trackLength = length;
+    mediaState.trackPosition = pos;
 }

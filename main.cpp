@@ -7,6 +7,8 @@
 Arduino_Canvas canvas(TFT_W, TFT_H, NULL); // драйвер не нужен, мы сами сливаем буфер
 Arduino_GFX * gfx = &canvas;
 
+bool HandleEvents();
+
 int main(int argc, char* argv[])
 {
     SDL_Init(SDL_INIT_VIDEO);
@@ -32,17 +34,21 @@ int main(int argc, char* argv[])
     timerStart();
 
     bool running = true;
-    SDL_Event event;
+    
+
+    extern UIState* g_uiState;
+
+    g_uiState = new UIState;
 
     while (running)
     {
-        while (SDL_PollEvent(&event))
+        if (!HandleEvents())
         {
-            if (event.type == SDL_QUIT)
-                running = false;
+            running = false;
+            break;
         }
 
-        DrawUI();
+        g_uiState->render();
 
         uint16_t* fb = canvas.getFramebuffer();
 
@@ -61,4 +67,41 @@ int main(int argc, char* argv[])
     SDL_Quit();
 
     return 0;
+}
+
+bool HandleEvents()
+{
+    SDL_Event event;
+
+     while (SDL_PollEvent(&event) != 0) {
+            // Process individual events
+            switch (event.type) {
+                case SDL_QUIT:
+                    return false;
+                case SDL_KEYDOWN:
+                    // Handle keyboard key down event
+                    // Example: if (e.key.keysym.sym == SDLK_ESCAPE) quit = true;
+
+                    if (event.key.keysym.sym == SDLK_1)
+                        g_uiState->handlePhysicalButton(PhysicalButtons::FUNC1);
+                    else if (event.key.keysym.sym == SDLK_2)
+                        g_uiState->handlePhysicalButton(PhysicalButtons::FUNC2);
+                    else if (event.key.keysym.sym == SDLK_3)
+                        g_uiState->handlePhysicalButton(PhysicalButtons::FUNC3);
+                    else if (event.key.keysym.sym == SDLK_4)
+                        g_uiState->handlePhysicalButton(PhysicalButtons::FUNC4);                        
+                    else if (event.key.keysym.sym == SDLK_LEFT)
+                        g_uiState->handlePhysicalButton(PhysicalButtons::LEFT);                                                
+                    else if (event.key.keysym.sym == SDLK_RIGHT)
+                        g_uiState->handlePhysicalButton(PhysicalButtons::RIGHT);                                                
+                    else if (event.key.keysym.sym == SDLK_UP)
+                        g_uiState->handlePhysicalButton(PhysicalButtons::UP);                                                
+                    else if (event.key.keysym.sym == SDLK_DOWN)
+                        g_uiState->handlePhysicalButton(PhysicalButtons::DOWN);                                                                        
+
+                    break;                                
+            }
+        }
+
+    return true;
 }
