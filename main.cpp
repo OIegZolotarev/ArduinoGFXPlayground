@@ -36,9 +36,9 @@ int main(int argc, char* argv[])
     bool running = true;
     
 
-    extern UIState* g_uiState;
+    
 
-    g_uiState = new UIState;
+    g_uiController = new UIController;
 
     while (running)
     {
@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
             break;
         }
 
-        g_uiState->render();
+        g_uiController->render();
 
         uint16_t* fb = canvas.getFramebuffer();
 
@@ -83,21 +83,21 @@ bool HandleEvents()
                     // Example: if (e.key.keysym.sym == SDLK_ESCAPE) quit = true;
 
                     if (event.key.keysym.sym == SDLK_1)
-                        g_uiState->handlePhysicalButton(PhysicalButtons::FUNC1);
+                        g_uiController->handlePhysicalButton(PhysicalButtons::FUNC1);
                     else if (event.key.keysym.sym == SDLK_2)
-                        g_uiState->handlePhysicalButton(PhysicalButtons::FUNC2);
+                        g_uiController->handlePhysicalButton(PhysicalButtons::FUNC2);
                     else if (event.key.keysym.sym == SDLK_3)
-                        g_uiState->handlePhysicalButton(PhysicalButtons::FUNC3);
+                        g_uiController->handlePhysicalButton(PhysicalButtons::FUNC3);
                     else if (event.key.keysym.sym == SDLK_4)
-                        g_uiState->handlePhysicalButton(PhysicalButtons::FUNC4);                        
+                        g_uiController->handlePhysicalButton(PhysicalButtons::FUNC4);                        
                     else if (event.key.keysym.sym == SDLK_LEFT)
-                        g_uiState->handlePhysicalButton(PhysicalButtons::LEFT);                                                
+                        g_uiController->handlePhysicalButton(PhysicalButtons::LEFT);                                                
                     else if (event.key.keysym.sym == SDLK_RIGHT)
-                        g_uiState->handlePhysicalButton(PhysicalButtons::RIGHT);                                                
+                        g_uiController->handlePhysicalButton(PhysicalButtons::RIGHT);                                                
                     else if (event.key.keysym.sym == SDLK_UP)
-                        g_uiState->handlePhysicalButton(PhysicalButtons::UP);                                                
+                        g_uiController->handlePhysicalButton(PhysicalButtons::UP);                                                
                     else if (event.key.keysym.sym == SDLK_DOWN)
-                        g_uiState->handlePhysicalButton(PhysicalButtons::DOWN);                                                                        
+                        g_uiController->handlePhysicalButton(PhysicalButtons::DOWN);                                                                        
 
                     break;                                
             }

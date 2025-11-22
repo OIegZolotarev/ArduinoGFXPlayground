@@ -43,10 +43,20 @@ enum class PhysicalButtons
     FUNC4
 };
 
-class UIState
+enum class TrackLabelStates
+{
+    StayingAtStart = 0,
+    GoingRight,
+    StayingAtEnd,
+    GoingLeft
+};
+
+class UIController
 {
     UIFunctionsState state = UIFunctionsState::Gauges;
     functionalButton_t buttons[4];
+    
+    int textSize = 0;
 
     void selectFunction(int funcId);
 
@@ -66,12 +76,27 @@ class UIState
         char trackName[64];
         int trackLength;
         int trackPosition;
+        unsigned long update_millis;
+
+        int trackNameLength = 0;        
+
+        TrackLabelStates labelState = TrackLabelStates::StayingAtStart;
+        float labelScrollPosition = 0;        
+        unsigned long labelNextUpdate = 0;
+
+
     }mediaState;
     
+    void setTextSize(int size);
 
+    int printTimeFormatted(int timeSeconds);
+
+    void drawMusicTrackName(int x,int y);
+
+    TrackLabelStates nextTrackLabelState(TrackLabelStates current);
 public:
 
-    UIState();
+    UIController();
 
     functionalButton_t* getFunctionalButtons() { return buttons; }
     UIFunctionsState currentState() { return state; }
@@ -87,4 +112,5 @@ public:
 
 };
 
-extern UIState* g_uiState;
+extern UIController* g_uiController;
+
