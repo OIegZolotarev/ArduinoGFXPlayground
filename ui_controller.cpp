@@ -1,6 +1,7 @@
 #include "Arduino_Canvas.h"
 #include "ui_controller.h"
 #include "timer.h"
+#include "net_wifi_serial_interface.h"
 
 extern Arduino_GFX * gfx;
 
@@ -131,34 +132,6 @@ void UIController::drawMusicTrackName(int x, int y)
         }
     }
 
-    // vec2i bounds = getTextBounds(track);
-
-    
-    // int stringLen = strlen(track);
-
-    // bounds.x = stringLen * 30;
-    // int charsLeft = stringLen;
-    // int charSize = bounds.x / charsLeft;
-
-    // 
-
-    // if (x + bounds.x > TFT_W)
-    //     charsLeft = (TFT_W - x) / charSize;
-
-    // int offset = (int)(millis() / 500) % ((stringLen - charsLeft) + 1);
-
-
-    // char* p = (char*)track + offset;
-    
-    
-
-    // while(charsLeft > 0)
-    // {
-    //     gfx->write(*p);
-    //     charsLeft--;
-    //     p++;
-    // }
-    
 }
 
 void UIController::render()
@@ -180,6 +153,38 @@ void UIController::render()
         break;
     case UIFunctionsState::Settings:
         break;
+    }
+
+    static unsigned long nextUpdate = 0;
+
+    if (millis() > nextUpdate)
+    {
+        network->queryMediaInfo();
+        nextUpdate = millis() + 500;
+    }
+
+    if (network->hasData())
+    {
+        uint16_t dataLength = network->readUInt16();
+        network->readStringNullTerminated(mediaState.trackName, sizeof(mediaState.trackName));        
+        
+        char artist[64];
+        network->readStringNullTerminated(artist, sizeof(artist));        
+
+        mediaState.trackLength = network->readUInt32();
+        int newPosition = network->readUInt32();
+
+        // Костыль когда хост не обновляет позицию трека - обновляем только тогда когда она явно обновилась
+        // В остальных случая позицию обновляет наш таймер.
+        // TODO: состояние добавить передачу состояния паузы и описать протокол в network_interface.h
+        if (mediaState.trackPositionFromHost != newPosition)
+        {
+            mediaState.trackPosition = newPosition;
+            mediaState.trackPositionFromHost = newPosition;
+        }
+
+        
+
     }
 
 }
@@ -249,7 +254,8 @@ UIController::UIController()
     
     selectFunction(2);
 
-    updateTrackState("Dave Rodgers feat. Eurobeat Union - Gold Night", 100, 300);
+
+    network = new WifiSerialInterface("127.0.0.1", 35000);
 }
 
 void UIController::selectFunction(int funcId)
@@ -305,6 +311,10 @@ void UIController::setTextSize(int size)
 
 int UIController::printTimeFormatted(int interval)
 {
+    // Проверка на хуету
+    if (interval < 0 || interval > 5999)
+        return 0;
+
     int fullMinutes = interval / 60;
     int seconds = interval % 60;
 
@@ -312,6 +322,7 @@ int UIController::printTimeFormatted(int interval)
     
     if (fullMinutes > 99)
         fullMinutes = 99;
+        
 
     sprintf(temp, "%0.2d:%0.2d", fullMinutes, seconds);
 

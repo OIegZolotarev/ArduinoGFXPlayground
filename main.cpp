@@ -4,6 +4,8 @@
 #include <chrono>
 #include "timer.h"
 
+#include "WifiSerial.h"
+
 Arduino_Canvas canvas(TFT_W, TFT_H, NULL); // драйвер не нужен, мы сами сливаем буфер
 Arduino_GFX * gfx = &canvas;
 
@@ -34,9 +36,6 @@ int main(int argc, char* argv[])
     timerStart();
 
     bool running = true;
-    
-
-    
 
     g_uiController = new UIController;
 

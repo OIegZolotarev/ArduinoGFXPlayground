@@ -73,6 +73,15 @@
     "xmemory": "cpp",
     "xstring": "cpp",
     "xtr1common": "cpp",
-    "xutility": "cpp"
+    "xutility": "cpp",
+    "algorithm": "cpp",
+    "condition_variable": "cpp",
+    "deque": "cpp",
+    "iostream": "cpp",
+    "mutex": "cpp",
+    "ostream": "cpp",
+    "queue": "cpp",
+    "stop_token": "cpp",
+    "thread": "cpp"
 }
 }

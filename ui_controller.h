@@ -1,6 +1,7 @@
 #define TFT_W 480
 #define TFT_H 272
 
+#include "net_interface.h"
 
 typedef struct
 {
@@ -73,10 +74,11 @@ class UIController
     // Media:
     struct 
     {
-        char trackName[64];
-        int trackLength;
-        int trackPosition;
-        unsigned long update_millis;
+        char trackName[64] = {0};
+        int trackLength = 0;
+        int trackPosition = 0;
+        int trackPositionFromHost = 0;
+        unsigned long update_millis = 0;
 
         int trackNameLength = 0;        
 
@@ -94,6 +96,8 @@ class UIController
     void drawMusicTrackName(int x,int y);
 
     TrackLabelStates nextTrackLabelState(TrackLabelStates current);
+
+    NetworkInterface * network = nullptr;
 public:
 
     UIController();
