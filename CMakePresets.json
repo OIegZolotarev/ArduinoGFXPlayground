@@ -8,7 +8,7 @@
       "toolset": "host=x64",
       "architecture": "x64",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "C:/Users/ovzol/Documents/projects/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "CMAKE_TOOLCHAIN_FILE": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
         "VCPKG_TARGET_TRIPLET": "x64-windows",
         "VCPKG_APPLOCAL_DEPS": "ON",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"

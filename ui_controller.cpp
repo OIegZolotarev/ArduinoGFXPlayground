@@ -3,9 +3,14 @@
 #include "timer.h"
 #include "net_wifi_serial_interface.h"
 
+#include "com_colors.h"
+#include "ui_keyboard.h"
+
 extern Arduino_GFX * gfx;
 
 UIController* g_uiController;
+
+OnScreenKeyboard * kb = nullptr;
 
 vec2i getTextBounds(const char* text)
 {
@@ -150,6 +155,7 @@ void UIController::render()
         stateMedia();
         break;
     case UIFunctionsState::Tune:
+        kb->draw();
         break;
     case UIFunctionsState::Settings:
         break;
@@ -189,9 +195,51 @@ void UIController::render()
 
 }
 
+
+
 void UIController::stateGauges()
 {
     
+    char *text = "Connecting...";
+
+    gfx->setTextColor(RGB565_LIGHTCORAL);
+    setTextSize(5);
+
+    char* p = text;
+    int n = 0;
+    int l = strlen(text);
+
+    int w = l * 6 * textSize;
+    int x = TFT_W / 2 - w/2;
+
+    while(*p)
+    {
+        HSV c;
+
+
+        c.h = (float)n / (float)l * 360.f;
+        c.s = 1;
+        c.v = 1;
+
+        c.h += millis() / 10.f;
+        c.h = (int)c.h % 360;
+
+        RGB r = hsvToRgb(c);    
+
+        int ir = r.r * 255;
+        int ib = r.b * 255;
+        int ig = r.g * 255;
+
+        gfx->setTextColor(RGB565(ir, ig, ib));
+
+        gfx->setCursor(x + n * 30, 100 + sin(millis() / 200.f + 6.28f * n / l) * 20);
+        gfx->write(*p);
+
+        n++;
+        p++;
+    }
+    
+
 }
 
 void UIController::stateMedia()
@@ -254,7 +302,10 @@ UIController::UIController()
     
     selectFunction(2);
 
+    static char buffer[32];
+    size_t bufLen = 32;
 
+    kb = new OnScreenKeyboard(gfx, buffer, bufLen);
     network = new WifiSerialInterface("127.0.0.1", 35000);
 }
 
@@ -273,6 +324,10 @@ void UIController::selectFunction(int funcId)
 
 void UIController::handlePhysicalButton(PhysicalButtons btnId)
 {
+    selectFunction(1);
+    kb->handlePhysicalButton(btnId);
+    return;
+
     switch(btnId)    
     {
     case PhysicalButtons::FUNC1:

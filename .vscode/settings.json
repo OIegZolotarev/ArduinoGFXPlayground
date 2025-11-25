@@ -2,14 +2,13 @@
     "cmake.configureArgs": [
         "-DVCPKG_APPLOCAL_DEPS=ON",
         "-DX_VCPKG_APPLOCAL_DEPS_INSTALL=ON",
-        "-DVCPKG_TARGET_TRIPLET=x64-windows"
+        "-DVCPKG_TARGET_TRIPLET=x64-windows",
+        "-DVCPKG_MANIFEST_MODE=OFF"
     ],
-    "vcpkg.general.enable": true,
-    "vcpkg.target.hostTriplet": "x64-windows",
-    "vcpkg.target.defaultTriplet": "x64-windows",
+    "vcpkg.general.enable": false,
     "vcpkg.target.useStaticLib": false,
     "cmake.configureSettings": {
-        "CMAKE_TOOLCHAIN_FILE": "C:/Users/ovzol/Documents/projects/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        "CMAKE_TOOLCHAIN_FILE": "C:\\vcpkg/scripts/buildsystems/vcpkg.cmake"
     },
     
     "vcpkg.target.installDependencies": true,
@@ -82,6 +81,24 @@
     "ostream": "cpp",
     "queue": "cpp",
     "stop_token": "cpp",
-    "thread": "cpp"
-}
+    "thread": "cpp",
+    "any": "cpp",
+    "array": "cpp",
+    "codecvt": "cpp",
+    "coroutine": "cpp",
+    "csignal": "cpp",
+    "cstdarg": "cpp",
+    "functional": "cpp",
+    "future": "cpp",
+    "list": "cpp",
+    "map": "cpp",
+    "source_location": "cpp",
+    "span": "cpp",
+    "unordered_map": "cpp",
+    "variant": "cpp",
+    "xhash": "cpp",
+    "xtree": "cpp"
+},
+"vcpkg.target.hostTriplet": "arm-neon-android",
+"vcpkg.target.defaultTriplet": "x64-windows"
 }
