@@ -4,6 +4,12 @@
 
 class NetworkInterface
 {
+protected:
+    int connectAttempts = 0;
+    unsigned long nextReconnect = 0;
+    
+    bool wasConnectedPreviousFrame = false;
+    bool justConnectedNow = false;
 public:
     virtual bool hasData() = 0;
     
@@ -11,8 +17,31 @@ public:
     virtual uint32_t readUInt32() = 0;
     
     virtual void readStringNullTerminated(char * destBuffer, size_t bufferSize) = 0;
-
     virtual void queryMediaInfo() = 0;
+
+    virtual bool isConnected() = 0;
+        
+    virtual void connect() = 0;
+    int  connectAttemps() { return connectAttempts; }
+
+    bool justConnected()
+    {
+        if (justConnectedNow)
+        {
+            justConnectedNow = false;
+            return true;
+        }
+
+        return false;
+        
+    }
+
+    void resetConnectionAttempts()
+    {
+        connectAttempts = 0;
+    }
+
+
 };
 
 enum ServerCalls

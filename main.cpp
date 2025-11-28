@@ -1,10 +1,10 @@
 #include <SDL2/SDL.h>
 #include "Arduino_Canvas.h"
-#include "ui_controller.h"
 #include <chrono>
 #include "timer.h"
 
-#include "WifiSerial.h"
+#include "ui_controller.h"
+#include "wifi_serial.h"
 
 Arduino_Canvas canvas(TFT_W, TFT_H, NULL); // драйвер не нужен, мы сами сливаем буфер
 Arduino_GFX * gfx = &canvas;

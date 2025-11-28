@@ -1,3 +1,5 @@
+#pragma once 
+
 #define TFT_W 480
 #define TFT_H 272
 
@@ -10,13 +12,13 @@ typedef struct
 
 typedef struct functionalButton_s
 {
-    const char* description;
-    void (*handler)();
+    const char* description = nullptr;
+    void (*handler)() = nullptr;
 
-    float timer;
+    float timer = 0;
 
-    uint16_t text_color;
-    uint16_t outline_color;
+    uint16_t text_color = 0;
+    uint16_t outline_color = 0;
 
     uint8_t flags = 0;
 
@@ -24,45 +26,28 @@ typedef struct functionalButton_s
 
 #define FB_HIGHLIGHT (1<<0)
 
-enum class UIFunctionsState
+enum class TopLevelWidgets
 {
     Gauges,
     Tune,
     Media,
-    Settings
+    Settings    
 };
 
-enum class PhysicalButtons
-{
-    LEFT,
-    RIGHT,
-    UP,
-    DOWN,
-    FUNC1,
-    FUNC2,
-    FUNC3,
-    FUNC4
-};
 
-enum class TrackLabelStates
-{
-    StayingAtStart = 0,
-    GoingRight,
-    StayingAtEnd,
-    GoingLeft
-};
+#include "ui_widget.h"
+
 
 class UIController
 {
-    UIFunctionsState state = UIFunctionsState::Gauges;
+    TopLevelWidgets state = TopLevelWidgets::Gauges;
     functionalButton_t buttons[4];
+    vec2i clientAreaStart;
     
     int textSize = 0;
 
-    void selectFunction(int funcId);
-
-    void stateMedia();
-    void stateGauges();
+    void selectTopLevelWidget(TopLevelWidgets widgetId);     
+    void stateSettings();
 
     // Gauges
     struct 
@@ -70,49 +55,53 @@ class UIController
         uint8_t brakeLevel = 0;
         uint16_t rpm = 0;
     }gaugesState;
-
-    // Media:
-    struct 
-    {
-        char trackName[64] = {0};
-        int trackLength = 0;
-        int trackPosition = 0;
-        int trackPositionFromHost = 0;
-        unsigned long update_millis = 0;
-
-        int trackNameLength = 0;        
-
-        TrackLabelStates labelState = TrackLabelStates::StayingAtStart;
-        float labelScrollPosition = 0;        
-        unsigned long labelNextUpdate = 0;
-
-
-    }mediaState;
     
-    void setTextSize(int size);
-
+    
     int printTimeFormatted(int timeSeconds);
-
     void drawMusicTrackName(int x,int y);
 
-    TrackLabelStates nextTrackLabelState(TrackLabelStates current);
-
+    
     NetworkInterface * network = nullptr;
-public:
 
+    UIWidget* gaugesWidget = nullptr;
+    UIWidget* tuneWidget = nullptr;
+    UIWidget* mediaPlayerWidget = nullptr;
+    UIWidget* settingsWidget = nullptr;
+
+    UIWidget* topLevelWidget = nullptr;
+
+	void drawConnectingString();
+	void drawFunctionalButtons(int y);
+	int drawBigButton(const char* text, int x, int y, int w, uint16_t rectColor, uint16_t textColor, bool flash);
+
+
+
+public:
     UIController();
 
     functionalButton_t* getFunctionalButtons() { return buttons; }
-    UIFunctionsState currentState() { return state; }
+    TopLevelWidgets currentState() { return state; }
 
     void handlePhysicalButton(PhysicalButtons btnId);
-    
     void render();
+        
+    void setBrakeLevel(int brakeLevel) {};
+    void setRPM(int rpm) {};
 
-    void updateTrackState(const char* trackName, int trackPos, int trackLength);
+    void setTextSize(int size);
 
-    void setBrakeLevel(int brakeLevel);
-    void setRPM(int rpm);
+    const int getTextSize() const;
+    const int getTextWidth() const;
+    const int getTextHeight() const;
+
+    const vec2i getClientAreaStart() const
+    {
+        return clientAreaStart;
+    }
+
+    void pushWidget(UIWidget* pWidget);
+    void popWidget();
+    void setWidget(UIWidget* pWidget);
 
 };
 

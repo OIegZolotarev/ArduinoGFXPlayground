@@ -29,9 +29,15 @@ public:
 
     // Чтение null-terminated строки в буфер (как в WinAPI)
     bool readNullTerminatedString(char *buffer, size_t maxLen);
+	
+    void reconnect();
 
 private:
     void connect();
+	
+	void remakeSocket();
+
+
 
     void start_read();
     void do_write();
@@ -47,5 +53,9 @@ private:
     std::mutex read_mutex_;
 
     std::atomic<bool> connected_{false};
+    std::atomic<bool> connecting_{ false };
+
     std::queue<std::vector<uint8_t>> write_queue_;
+    asio::executor_work_guard<asio::io_context::executor_type> work_guard_;
+
 };

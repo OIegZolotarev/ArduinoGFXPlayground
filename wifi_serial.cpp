@@ -1,12 +1,14 @@
 #include <asio.hpp>
-#include "WifiSerial.h"
+#include "wifi_serial.h"
 
 WiFiSerial::WiFiSerial(const std::string &host, uint16_t port)
-    : io_context_(), socket_(io_context_), host_(host), port_(port)
+    : io_context_(), socket_(io_context_), host_(host), port_(port), work_guard_(asio::make_work_guard(io_context_))
 {
+    setlocale(LC_ALL, "Russian_Russia.1251"); // Or simply "Russian"
     connect();
     io_thread_ = std::thread([this]()
                              { io_context_.run(); });
+
 }
 
 bool WiFiSerial::hasData()
@@ -71,8 +73,9 @@ void WiFiSerial::write(const std::vector<uint8_t> &data)
 
 WiFiSerial::~WiFiSerial()
 {
-    io_context_.stop();
-    if (io_thread_.joinable())
+	work_guard_.reset(); // даём run() завершиться
+	io_context_.stop();
+	if (io_thread_.joinable()) 
         io_thread_.join();
 }
 
@@ -109,23 +112,66 @@ bool WiFiSerial::readNullTerminatedString(char *buffer, size_t maxLen)
 
 void WiFiSerial::connect()
 {
+	if (connecting_) return;      // ← НЕ ДАЕМ начинать новое подключение
+
+
+    connecting_ = true;
+
     asio::ip::tcp::resolver resolver(io_context_);
     auto endpoints = resolver.resolve(host_, std::to_string(port_));
 
     asio::async_connect(socket_, endpoints,
-                        [this](std::error_code ec, asio::ip::tcp::endpoint)
-                        {
-                            if (!ec)
-                            {
-                                connected_ = true;
-                                start_read();
-                            }
-                            else
-                            {
-                                connected_ = false;
-                                std::cerr << "Connect failed: " << ec.message() << "\n";
-                            }
-                        });
+        [this](std::error_code ec, asio::ip::tcp::endpoint) {
+
+            std::cout << "[thread " << std::this_thread::get_id()
+          << "] connect() called\n";
+
+            connecting_ = false;
+
+            if (!ec) {
+                connected_ = true;
+                start_read();
+            }
+            else {
+                connected_ = false;
+                std::cerr << "Connect failed: " << ec.message() << "\n";
+            }
+        });
+}
+
+void WiFiSerial::remakeSocket()
+{
+	std::error_code ec;
+	socket_.close(ec); // безопасно
+	socket_ = asio::ip::tcp::socket(io_context_); // ← новое чистое состояние
+}
+
+void WiFiSerial::reconnect()
+{
+	asio::post(io_context_, [this]() {
+
+		std::cout << "[thread " << std::this_thread::get_id()
+			<< "] reconnect() called\n";
+
+            connecting_ = false;
+		    connected_ = false;
+		    
+
+		    std::error_code ec;
+
+		    // 1. Отменяем все висящие операции
+		    socket_.cancel(ec);
+
+		    // 2. Закрываем сокет
+		    socket_.close(ec);
+
+		    // 3. Создаём новый
+		    socket_ = asio::ip::tcp::socket(io_context_);
+
+		    // 4. Пытаемся снова
+		    connect();
+
+		});
 }
 
 void WiFiSerial::start_read()

@@ -1,50 +1,22 @@
 
 #include "net_interface.h"
-#include "WifiSerial.h"
+#include "wifi_serial.h"
 
 class WifiSerialInterface: public NetworkInterface
-{
-    
+{    
     WiFiSerial* serialImpl = nullptr;
 public:
-    WifiSerialInterface(const char* host, int port)
-    {
-        serialImpl = new WiFiSerial(host, port);
-    }
+    WifiSerialInterface(const char* host, int port);
+    ~WifiSerialInterface();
 
-    ~WifiSerialInterface()
-    {
-        if (serialImpl)
-            delete serialImpl;
-    }
+    bool hasData() override;
+    bool isConnected() override;
 
-    virtual bool hasData() 
-    {
-        return serialImpl->hasData();
-    }
+    uint16_t readUInt16() override;
+    uint32_t readUInt32() override;
     
-    virtual uint16_t readUInt16() 
-    {
-        uint16_t r;
-        serialImpl->readUint16(r);
-        return r;
-    }
-
-
-    virtual uint32_t readUInt32() 
-    {
-        uint32_t r;
-        serialImpl->readUint32(r);
-        return r;
-    }
-    
-    virtual void readStringNullTerminated(char * destBuffer, size_t bufferSize)
-    {
-        serialImpl->readNullTerminatedString(destBuffer, bufferSize);
-    }
-
-    virtual void queryMediaInfo()
-    {
-        serialImpl->write({'I', 'N', 'F', 'O'});
-    }
+    void readStringNullTerminated(char * destBuffer, size_t bufferSize) override;
+    void queryMediaInfo() override;
+       
+    void connect() override;
 };
