@@ -156,64 +156,32 @@ void MediaControllerWidget::renderStuffHasTrackData()
 	printTimeFormatted(mediaState.trackLength);
 
 
-	if (mediaState.playing)
-	{
-		auto delta = millis() - mediaState.update_millis;
 
-		if (delta > 1000)
-		{
-			mediaState.trackPosition += delta / 1000;
-			mediaState.update_millis = millis();
-		}
-	}
+	
 }
 
 void MediaControllerWidget::render() 
 {
 	if (*mediaState.trackName != 0)
 		renderStuffHasTrackData();
-
 	else
+		renderNoMediaLoadedBanner();
+
+	auto delta = millis() - mediaState.update_millis;
+
+	if (delta > 1000)
 	{
-		char* text = "No media loaded";
+		mediaState.update_millis = millis();
 
-		gfx->setTextColor(RGB565_LIGHTCORAL);
-		g_uiController->setTextSize(5);
-
-		char* p = text;
-		int n = 0;
-		int l = strlen(text);
-
-		int w = l * g_uiController->getTextWidth();
-		int x = TFT_W / 2 - w / 2;
-
-		while (*p)
+		if (mediaState.playing)
 		{
-			HSV c;
-
-
-			c.h = (float)n / (float)l * 360.f;
-			c.s = 1;
-			c.v = 1;
-
-			c.h += millis() / 10.f;
-			c.h = (int)c.h % 360;
-
-			RGB r = hsvToRgb(c);
-
-			int ir = r.r * 255;
-			int ib = r.b * 255;
-			int ig = r.g * 255;
-
-			gfx->setTextColor(RGB565(ir, ig, ib));
-
-			gfx->setCursor(x + n * 30, 120 + sin(millis() / 200.f + 6.28f * n / l) * 20);
-			gfx->write(*p);
-
-			n++;
-			p++;
+			mediaState.trackPosition += delta / 1000;
 		}
+
+		g_uiController->requestMediaState();
 	}
+
+	
 
 }
 
@@ -246,6 +214,83 @@ void MediaControllerWidget::updateTrackState(const char* trackName, int trackPos
 }
 
 void MediaControllerWidget::onNetworkPacketUpdate(responseData_t* packet)
+{
+	ServerCalls svCall = (ServerCalls)packet->serverCall;
+
+	switch (svCall)
+	{
+	case MediaInfo:
+		readMediaInfo(packet);
+		break;
+	case MediaState:
+		readMediaState(packet);
+		break;
+	case MediaThumbnail:
+		readMediaThumbnail();
+		break;
+	}
+}
+
+void MediaControllerWidget::renderNoMediaLoadedBanner()
+{
+	char* text = "No media loaded";
+
+	gfx->setTextColor(RGB565_LIGHTCORAL);
+	g_uiController->setTextSize(5);
+
+	char* p = text;
+	int n = 0;
+	int l = strlen(text);
+
+	int w = l * g_uiController->getTextWidth();
+	int x = TFT_W / 2 - w / 2;
+
+	while (*p)
+	{
+		HSV c;
+
+
+		c.h = (float)n / (float)l * 360.f;
+		c.s = 1;
+		c.v = 1;
+
+		c.h += millis() / 10.f;
+		c.h = (int)c.h % 360;
+
+		RGB r = hsvToRgb(c);
+
+		int ir = r.r * 255;
+		int ib = r.b * 255;
+		int ig = r.g * 255;
+
+		gfx->setTextColor(RGB565(ir, ig, ib));
+
+		gfx->setCursor(x + n * 30, 120 + sin(millis() / 200.f + 6.28f * n / l) * 20);
+		gfx->write(*p);
+
+		n++;
+		p++;
+	}
+}
+
+void MediaControllerWidget::readMediaInfo(responseData_t* packet)
+{
+	ResponseReader r(packet);
+
+	mediaState.trackLength = r.readUInt32();
+	mediaState.trackPosition = r.readUInt32();
+
+	r.readStringNullTerminated(mediaState.trackName, sizeof(mediaState.trackName));	
+
+	mediaState.trackNameLength = strlen(mediaState.trackName);
+}
+
+void MediaControllerWidget::readMediaState(responseData_t* packet)
+{
+	
+}
+
+void MediaControllerWidget::readMediaThumbnail()
 {
 	
 }

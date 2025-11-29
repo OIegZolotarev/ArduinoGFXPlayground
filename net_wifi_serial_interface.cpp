@@ -1,5 +1,6 @@
 #include "net_wifi_serial_interface.h"
 #include "timer.h"
+#include <ui_controller.h>
 
 
 
@@ -19,29 +20,7 @@ bool WifiSerialInterface::hasData()
 	return serialImpl->hasData();
 }
 
-uint16_t WifiSerialInterface::readUInt16()
-{
-	uint16_t r;
-	serialImpl->readUint16(r);
-	return r;
-}
 
-uint32_t WifiSerialInterface::readUInt32()
-{
-	uint32_t r;
-	serialImpl->readUint32(r);
-	return r;
-}
-
-void WifiSerialInterface::readStringNullTerminated(char* destBuffer, size_t bufferSize)
-{
-	serialImpl->readNullTerminatedString(destBuffer, bufferSize);
-}
-
-void WifiSerialInterface::queryMediaInfo()
-{
-	serialImpl->write({ 'I', 'N', 'F', 'O' });
-}
 
 void WifiSerialInterface::connect()
 {
@@ -52,6 +31,54 @@ void WifiSerialInterface::connect()
 	serialImpl->reconnect();
 
 	nextReconnect = nextReconnect + 5000;
+}
+
+void WifiSerialInterface::readData()
+{
+	auto transferToBuffer = [&](std::vector<uint8_t> & received)
+	{
+			uint8_t* bufferPtr = dataBuffer + bufferOffset;
+			memcpy(bufferPtr, received.data(), received.size());
+			bufferOffset += received.size();
+	};
+
+	size_t leftToRead = 0;
+
+	if (bufferOffset < sizeof(responseData_t))
+	{
+		leftToRead = sizeof(responseData_t) - bufferOffset;
+		
+		auto received = serialImpl->readBytes(leftToRead);
+		transferToBuffer(received);
+	}
+	else
+	{
+		if (responseData->magic != PACKET_MAGIC)
+		{
+			bufferOffset = 0;
+			return;
+		}
+
+		leftToRead = responseData->length - bufferOffset;
+
+		auto received = serialImpl->readBytes(leftToRead);
+		transferToBuffer(received);
+
+		if (bufferOffset == responseData->length)
+		{
+			g_uiController->onPacketReceived(responseData);
+			bufferOffset = 0;
+		}
+	}
+	
+}
+
+void WifiSerialInterface::performServerCall(ServerCalls callId)
+{
+	if (!isConnected())
+		return;
+
+	serialImpl->write({ 0xFE, 0xFF, (uint8_t)callId });
 }
 
 bool WifiSerialInterface::isConnected()

@@ -11,12 +11,10 @@ public:
 
     bool hasData() override;
     bool isConnected() override;
-
-    uint16_t readUInt16() override;
-    uint32_t readUInt32() override;
-    
-    void readStringNullTerminated(char * destBuffer, size_t bufferSize) override;
-    void queryMediaInfo() override;
        
     void connect() override;
+    void readData() override;
+
+    void performServerCall(ServerCalls callid) override;
+
 };

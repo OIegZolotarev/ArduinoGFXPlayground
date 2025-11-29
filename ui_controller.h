@@ -103,6 +103,8 @@ public:
     void popWidget();
     void setWidget(UIWidget* pWidget);
 
+    void onPacketReceived(responseData_t* responseData);
+    void requestMediaState();
 };
 
 extern UIController* g_uiController;

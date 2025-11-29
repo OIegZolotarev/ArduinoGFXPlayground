@@ -51,13 +51,14 @@ void UIController::render()
     if (topLevelWidget)
         topLevelWidget->render();
 
+    network->readData();
+    
     return;
 
     static unsigned long nextUpdate = 0;
 
     if (millis() > nextUpdate)
-    {
-        network->queryMediaInfo();
+    {        
         nextUpdate = millis() + 500;
     }
 
@@ -320,5 +321,43 @@ void UIController::popWidget()
 void UIController::setWidget(UIWidget* pWidget)
 {
     topLevelWidget = pWidget;
+}
+
+void UIController::onPacketReceived(responseData_t* responseData)
+{
+    ServerCalls svCall = (ServerCalls)responseData->serverCall;
+
+    switch (svCall)
+    {
+    case MediaInfo:
+        mediaPlayerWidget->onNetworkPacketUpdate(responseData);
+        break;
+    case MediaState:
+        break;
+    case MediaThumbnail:
+        break;
+    case Play:
+        break;
+    case Pause:
+        break;
+    case PreviousTrack:
+        break;
+    case NextTrack:
+        break;
+    case VolumeUp:
+        break;
+    case VolumeDown:
+        break;
+    case Mute:
+        break;
+    default:
+        break;
+
+    }
+}
+
+void UIController::requestMediaState()
+{
+    network->performServerCall(ServerCalls::MediaInfo);
 }
 

@@ -56,4 +56,11 @@ public:
 
 
 
+
+    void renderNoMediaLoadedBanner();
+
+private:
+    void readMediaInfo(responseData_t* packet);
+    void readMediaState(responseData_t* packet);
+    void readMediaThumbnail();
 };
