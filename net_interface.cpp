@@ -45,6 +45,14 @@ uint32_t ResponseReader::readUInt32()
 	return r;
 }
 
+uint8_t ResponseReader::readUInt8()
+{
+	uint8_t r = *((uint8_t*)packet + offset);
+
+	offset += sizeof(uint8_t);
+	return r;
+}
+
 void ResponseReader::readStringNullTerminated(char* destBuffer, size_t bufferSize)
 {
 	uint8_t* p = (uint8_t*)packet + offset;

@@ -7,7 +7,9 @@
 
 MediaControllerWidget::MediaControllerWidget()
 {
-
+	const int numPixels = THUMBNAIL_W * THUMBNAIL_H;
+	for (int i = 0; i < numPixels; i++)
+		thumbnailData[i] = RGB565_LIGHTGREEN;
 }
 
 MediaControllerWidget::~MediaControllerWidget()
@@ -125,7 +127,7 @@ void MediaControllerWidget::renderStuffHasTrackData()
 	g_uiController->setTextSize(2);
 	gfx->setCursor(0, 100);
 
-	if (mediaState.playing)
+	if (mediaState.isPlaying)
 		gfx->print("Now playing:");
 	else
 		gfx->print("Paused:");
@@ -157,7 +159,7 @@ void MediaControllerWidget::renderStuffHasTrackData()
 
 
 
-	
+	gfx->draw16bitRGBBitmap(TFT_W - (THUMBNAIL_W + 8), 32, thumbnailData, THUMBNAIL_W, THUMBNAIL_H);
 }
 
 void MediaControllerWidget::render() 
@@ -173,7 +175,7 @@ void MediaControllerWidget::render()
 	{
 		mediaState.update_millis = millis();
 
-		if (mediaState.playing)
+		if (mediaState.isPlaying)
 		{
 			mediaState.trackPosition += delta / 1000;
 		}
@@ -222,11 +224,8 @@ void MediaControllerWidget::onNetworkPacketUpdate(responseData_t* packet)
 	case MediaInfo:
 		readMediaInfo(packet);
 		break;
-	case MediaState:
-		readMediaState(packet);
-		break;
 	case MediaThumbnail:
-		readMediaThumbnail();
+		readMediaThumbnail(packet);
 		break;
 	}
 }
@@ -279,18 +278,33 @@ void MediaControllerWidget::readMediaInfo(responseData_t* packet)
 
 	mediaState.trackLength = r.readUInt32();
 	mediaState.trackPosition = r.readUInt32();
+	mediaState.isPlaying = r.readUInt8() == 1;
+
 
 	r.readStringNullTerminated(mediaState.trackName, sizeof(mediaState.trackName));	
 
 	mediaState.trackNameLength = strlen(mediaState.trackName);
 }
 
-void MediaControllerWidget::readMediaState(responseData_t* packet)
-{
-	
-}
 
-void MediaControllerWidget::readMediaThumbnail()
+void MediaControllerWidget::readMediaThumbnail(responseData_t * packet)
 {
-	
+	ResponseReader r(packet);
+
+	int lineIndex = r.readUInt8();
+	int numLines = r.readUInt8();
+
+
+	FILE* fp = fopen("C:/temp/thumb_slice.raw", "wb");
+	fwrite(packet, packet->length, 1, fp);
+	fclose(fp);
+
+	for (int i = lineIndex; i < (lineIndex + numLines); i++)
+	{
+		uint16_t *p = &thumbnailData[i * THUMBNAIL_W];
+		for (int x = 0; x < THUMBNAIL_W; x++)
+		{
+			*p++ = r.readUInt16();
+		}
+	}
 }

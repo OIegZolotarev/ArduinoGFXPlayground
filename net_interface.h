@@ -17,8 +17,7 @@ typedef struct responseData_s
 
 enum ServerCalls
 {
-	MediaInfo = 0,
-	MediaState,
+	MediaInfo = 0,	
 	MediaThumbnail,
 	Play,
 	Pause,
@@ -68,7 +67,9 @@ class ResponseReader
 public:
     ResponseReader(responseData_t* r);
 
-	virtual uint16_t readUInt16();
-	virtual uint32_t readUInt32();
-	virtual void readStringNullTerminated(char* destBuffer, size_t bufferSize);
+	uint16_t readUInt16();
+	uint32_t readUInt32();
+    uint8_t readUInt8();
+
+	void readStringNullTerminated(char* destBuffer, size_t bufferSize);
 };

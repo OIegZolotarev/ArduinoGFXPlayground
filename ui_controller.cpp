@@ -330,26 +330,18 @@ void UIController::onPacketReceived(responseData_t* responseData)
     switch (svCall)
     {
     case MediaInfo:
-        mediaPlayerWidget->onNetworkPacketUpdate(responseData);
-        break;
-    case MediaState:
-        break;
     case MediaThumbnail:
-        break;
     case Play:
-        break;
     case Pause:
+	case PreviousTrack:
+	case NextTrack:
+	case VolumeUp:
+	case VolumeDown:
+	case Mute:
+        mediaPlayerWidget->onNetworkPacketUpdate(responseData);            
         break;
-    case PreviousTrack:
-        break;
-    case NextTrack:
-        break;
-    case VolumeUp:
-        break;
-    case VolumeDown:
-        break;
-    case Mute:
-        break;
+    
+        
     default:
         break;
 
@@ -359,5 +351,6 @@ void UIController::onPacketReceived(responseData_t* responseData)
 void UIController::requestMediaState()
 {
     network->performServerCall(ServerCalls::MediaInfo);
+    network->performServerCall(ServerCalls::MediaThumbnail);
 }
 

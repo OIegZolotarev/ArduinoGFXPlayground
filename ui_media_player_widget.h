@@ -12,24 +12,31 @@ enum class TrackLabelStates
     GoingLeft
 };
 
+#define THUMBNAIL_W 100 
+#define THUMBNAIL_H 55
+
 class MediaControllerWidget: public UIWidget
 {
     // Media:
     struct 
     {
-        bool playing = false;
+        bool isPlaying = false;
         char trackName[64] = {0};
-        int trackLength = 0;
-        int trackPosition = 0;
-        int trackPositionFromHost = 0;
+        uint16_t trackLength = 0;
+        uint16_t trackPosition = 0;
+        uint16_t trackPositionFromHost = 0;
         unsigned long update_millis = 0;
 
-        int trackNameLength = 0;        
+        uint16_t trackNameLength = 0;
 
         TrackLabelStates labelState = TrackLabelStates::StayingAtStart;
         float labelScrollPosition = 0;        
         unsigned long labelNextUpdate = 0;
     }mediaState;
+
+#pragma pack(push,1)
+    uint16_t thumbnailData[THUMBNAIL_W * THUMBNAIL_H];
+#pragma pack(pop)
 
     void drawMusicTrackName(int x, int y);
     
@@ -61,6 +68,5 @@ public:
 
 private:
     void readMediaInfo(responseData_t* packet);
-    void readMediaState(responseData_t* packet);
-    void readMediaThumbnail();
+    void readMediaThumbnail(responseData_t* packet);
 };
