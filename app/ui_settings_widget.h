@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ui_widget.h"
-#include <ui_numeric_editor.h>
+#include "ui_numeric_editor.h"
 
 enum class SettingsItemKinds
 {

@@ -2,9 +2,9 @@
 #pragma once 
 
 #include "Arduino_Canvas.h"
-#include "net_interface.h"
+#include "../platform_shared/platform.h"
 
-extern class UIController * g_uiController;
+
 extern Arduino_GFX* gfx;
 
 enum class PhysicalButtons

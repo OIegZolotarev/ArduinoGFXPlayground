@@ -8,10 +8,6 @@
 #include "ui_media_player_widget.h"
 #include "ui_settings_widget.h"
 
-extern Arduino_GFX * gfx;
-
-UIController* g_uiController;
-
 OnScreenKeyboard * kb = nullptr;
 
 vec2i getTextBounds(const char* text)
@@ -22,10 +18,6 @@ vec2i getTextBounds(const char* text)
 
     return vec2i{w,h};
 }
-
-
-
-
 
 void UIController::render()
 {
@@ -202,7 +194,7 @@ int UIController::drawBigButton(const char* text, int x, int y, int w, uint16_t 
 	return w;
 }
 
-UIController::UIController()
+UIController::UIController(ApplicationPlatform * platformInstance)
 {
     static char buffer[32];
     size_t bufLen = 32;
@@ -213,6 +205,7 @@ UIController::UIController()
     mediaPlayerWidget = new MediaControllerWidget();
     settingsWidget = new SettingsWidget("System settings");
 
+    platform = platformInstance;
 }
 
 void UIController::selectTopLevelWidget(TopLevelWidgets id)

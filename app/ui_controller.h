@@ -3,7 +3,7 @@
 #define TFT_W 480
 #define TFT_H 272
 
-#include "net_interface.h"
+#include "../platform_shared/platform.h"
 
 typedef struct
 {
@@ -74,10 +74,11 @@ class UIController
 	void drawFunctionalButtons(int y);
 	int drawBigButton(const char* text, int x, int y, int w, uint16_t rectColor, uint16_t textColor, bool flash);
 
+    ApplicationPlatform* platform = nullptr;
 
 
 public:
-    UIController();
+    UIController(ApplicationPlatform * platformInstance);
 
     functionalButton_t* getFunctionalButtons() { return buttons; }
     TopLevelWidgets currentState() { return state; }
@@ -107,5 +108,5 @@ public:
     void requestMediaState();
 };
 
-extern UIController* g_uiController;
+
 

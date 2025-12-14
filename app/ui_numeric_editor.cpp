@@ -1,6 +1,5 @@
 #include "ui_controller.h"
 #include "ui_numeric_editor.h"
-
 #include "ui_settings_widget.h"
 
 void NumericEditorWidget::setItem(SettingsItem* _item)
