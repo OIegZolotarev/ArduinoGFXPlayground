@@ -6,11 +6,11 @@
 Arduino_Canvas canvas(TFT_W, TFT_H, NULL); // драйвер не нужен, мы сами сливаем буфер
 Arduino_GFX* gfx = &canvas;
 
-UIController* g_uiController;
+UIController* appInstance;
 
 PlatformPC::PlatformPC()
 {
-	g_uiController = new UIController(this);
+	appInstance = new UIController(this);
 
 	SDL_Init(SDL_INIT_VIDEO);
 
@@ -34,7 +34,7 @@ PlatformPC::PlatformPC()
 
 PlatformPC::~PlatformPC()
 {
-	delete g_uiController;
+	delete appInstance;
 
 	SDL_DestroyTexture(texture);
 	SDL_DestroyRenderer(renderer);
@@ -69,7 +69,7 @@ void PlatformPC::loop()
 			break;
 		}
 
-		g_uiController->render();
+		appInstance->render();
 
 		uint16_t* fb = canvas.getFramebuffer();
 
@@ -97,21 +97,21 @@ bool PlatformPC::handleEvents()
 			// Example: if (e.key.keysym.sym == SDLK_ESCAPE) quit = true;
 
 			if (event.key.keysym.sym == SDLK_1)
-				g_uiController->handlePhysicalButton(PhysicalButtons::FUNC1);
+				appInstance->handlePhysicalButton(PhysicalButtons::FUNC1);
 			else if (event.key.keysym.sym == SDLK_2)
-				g_uiController->handlePhysicalButton(PhysicalButtons::FUNC2);
+				appInstance->handlePhysicalButton(PhysicalButtons::FUNC2);
 			else if (event.key.keysym.sym == SDLK_3)
-				g_uiController->handlePhysicalButton(PhysicalButtons::FUNC3);
+				appInstance->handlePhysicalButton(PhysicalButtons::FUNC3);
 			else if (event.key.keysym.sym == SDLK_4)
-				g_uiController->handlePhysicalButton(PhysicalButtons::FUNC4);
+				appInstance->handlePhysicalButton(PhysicalButtons::FUNC4);
 			else if (event.key.keysym.sym == SDLK_LEFT)
-				g_uiController->handlePhysicalButton(PhysicalButtons::LEFT);
+				appInstance->handlePhysicalButton(PhysicalButtons::LEFT);
 			else if (event.key.keysym.sym == SDLK_RIGHT)
-				g_uiController->handlePhysicalButton(PhysicalButtons::RIGHT);
+				appInstance->handlePhysicalButton(PhysicalButtons::RIGHT);
 			else if (event.key.keysym.sym == SDLK_UP)
-				g_uiController->handlePhysicalButton(PhysicalButtons::UP);
+				appInstance->handlePhysicalButton(PhysicalButtons::UP);
 			else if (event.key.keysym.sym == SDLK_DOWN)
-				g_uiController->handlePhysicalButton(PhysicalButtons::DOWN);
+				appInstance->handlePhysicalButton(PhysicalButtons::DOWN);
 
 			break;
 		}

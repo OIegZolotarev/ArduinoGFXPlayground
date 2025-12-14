@@ -107,7 +107,7 @@ public:
 	SettingsWidget(const char* _title);
 	~SettingsWidget();
 	
-	void render() override;
+	void render(ApplicationPlatform* platformInstance) override;
 	bool handlePhysicalButton(PhysicalButtons btnId) override;
 
 

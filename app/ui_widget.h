@@ -4,9 +4,6 @@
 #include "Arduino_Canvas.h"
 #include "../platform_shared/platform.h"
 
-
-extern Arduino_GFX* gfx;
-
 enum class PhysicalButtons
 {
     LEFT,
@@ -26,7 +23,7 @@ public:
     UIWidget() = default;
     virtual ~UIWidget() = default;
 
-    virtual void render() = 0;
+    virtual void render(ApplicationPlatform* platformInstance) = 0;
     virtual bool handlePhysicalButton(PhysicalButtons btnId) = 0;
 
     virtual void onSelected() {};

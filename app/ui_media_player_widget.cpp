@@ -17,11 +17,13 @@ MediaControllerWidget::~MediaControllerWidget()
 
 }
 
-void  MediaControllerWidget::drawMusicTrackName(int x, int y)
+void  MediaControllerWidget::drawMusicTrackName(ApplicationPlatform* plat, int x, int y)
 {
+	auto gfx = plat->gfxInstance();
+
     char* p = (char*)mediaState.trackName;
        
-    int trackLabelWidth = mediaState.trackNameLength * g_uiController->getTextWidth();
+    int trackLabelWidth = mediaState.trackNameLength * appInstance->getTextWidth();
     int textOffset = 0;
 
     int overShoot = trackLabelWidth - TFT_W;
@@ -100,11 +102,13 @@ TrackLabelStates MediaControllerWidget::nextTrackLabelState(TrackLabelStates cur
 	return TrackLabelStates::StayingAtStart;
 }
 
-int MediaControllerWidget::printTimeFormatted(int interval)
+int MediaControllerWidget::printTimeFormatted(ApplicationPlatform* p,int interval)
 {
 	// Проверка на хуету
 	if (interval < 0 || interval > 5999)
 		return 0;
+	
+	auto gfx = p->gfxInstance();
 
 	int fullMinutes = interval / 60;
 	int seconds = interval % 60;
@@ -122,9 +126,12 @@ int MediaControllerWidget::printTimeFormatted(int interval)
 	return strlen(temp);
 }
 
-void MediaControllerWidget::renderStuffHasTrackData()
+void MediaControllerWidget::renderStuffHasTrackData(ApplicationPlatform *p)
 {
-	g_uiController->setTextSize(2);
+	auto gfx = p->gfxInstance();
+
+	appInstance->setTextSize(2);
+
 	gfx->setCursor(0, 100);
 
 	if (mediaState.isPlaying)
@@ -132,22 +139,22 @@ void MediaControllerWidget::renderStuffHasTrackData()
 	else
 		gfx->print("Paused:");
 
-	g_uiController->setTextSize(5);
+	appInstance->setTextSize(5);
 
 	gfx->setTextColor(RGB565_AQUA);
 
-	drawMusicTrackName(0, 120);
+	drawMusicTrackName(p,0, 120);
 
-	g_uiController->setTextSize(3);
+	appInstance->setTextSize(3);
 
-	int y = TFT_H - g_uiController->getTextHeight();
+	int y = TFT_H - appInstance->getTextHeight();
 
 
 	gfx->setTextColor(RGB565_BLUEVIOLET);
 	gfx->setCursor(0, y);
 
-	int timeSymbolsCount = printTimeFormatted(mediaState.trackPosition);
-	int timeLabelWidth = g_uiController->getTextWidth() * timeSymbolsCount;
+	int timeSymbolsCount = printTimeFormatted(p, mediaState.trackPosition);
+	int timeLabelWidth = appInstance->getTextWidth() * timeSymbolsCount;
 
 	int barWidth = TFT_W - (timeLabelWidth * 2);
 	gfx->drawRect(timeLabelWidth, y, barWidth, 24, RGB565_CHARTREUSE);
@@ -155,19 +162,19 @@ void MediaControllerWidget::renderStuffHasTrackData()
 
 	gfx->setCursor(TFT_W - timeLabelWidth, y);
 
-	printTimeFormatted(mediaState.trackLength);
+	printTimeFormatted(p, mediaState.trackLength);
 
 
 
 	gfx->draw16bitRGBBitmap(TFT_W - (THUMBNAIL_W + 8), 32, thumbnailData, THUMBNAIL_W, THUMBNAIL_H);
 }
 
-void MediaControllerWidget::render() 
+void MediaControllerWidget::render(ApplicationPlatform* platformInstance)
 {
 	if (*mediaState.trackName != 0)
-		renderStuffHasTrackData();
+		renderStuffHasTrackData(platformInstance);
 	else
-		renderNoMediaLoadedBanner();
+		renderNoMediaLoadedBanner(platformInstance);
 
 	auto delta = millis() - mediaState.update_millis;
 
@@ -180,7 +187,7 @@ void MediaControllerWidget::render()
 			mediaState.trackPosition += delta / 1000;
 		}
 
-		g_uiController->requestMediaState();
+		appInstance->requestMediaState();
 	}
 
 	
@@ -230,18 +237,20 @@ void MediaControllerWidget::onNetworkPacketUpdate(responseData_t* packet)
 	}
 }
 
-void MediaControllerWidget::renderNoMediaLoadedBanner()
+void MediaControllerWidget::renderNoMediaLoadedBanner(ApplicationPlatform* plat)
 {
-	char* text = "No media loaded";
+	auto gfx = plat->gfxInstance();
 
+	char* text = "No media loaded";
+	
 	gfx->setTextColor(RGB565_LIGHTCORAL);
-	g_uiController->setTextSize(5);
+	appInstance->setTextSize(5);
 
 	char* p = text;
 	int n = 0;
 	int l = strlen(text);
 
-	int w = l * g_uiController->getTextWidth();
+	int w = l * appInstance->getTextWidth();
 	int x = TFT_W / 2 - w / 2;
 
 	while (*p)

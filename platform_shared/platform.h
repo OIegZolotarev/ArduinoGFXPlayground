@@ -17,6 +17,5 @@ public:
 	virtual void loop() = 0;
 };
 
-extern UIController* g_uiController;
-extern Arduino_GFX* gfx;
+extern UIController* appInstance;
 extern NetworkInterface* networkInterface;

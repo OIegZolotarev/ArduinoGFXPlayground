@@ -38,20 +38,20 @@ class MediaControllerWidget: public UIWidget
     uint16_t thumbnailData[THUMBNAIL_W * THUMBNAIL_H];
 #pragma pack(pop)
 
-    void drawMusicTrackName(int x, int y);
+    void drawMusicTrackName(ApplicationPlatform* p, int x, int y);
     
 	TrackLabelStates nextTrackLabelState(TrackLabelStates current);
     
-	int printTimeFormatted(int interval);
+	int printTimeFormatted(ApplicationPlatform* p,int interval);
 
-	void renderStuffHasTrackData();
-
+	void renderStuffHasTrackData(ApplicationPlatform* p);
+    void renderNoMediaLoadedBanner(ApplicationPlatform* p);
 
 public:
     MediaControllerWidget();
     ~MediaControllerWidget();
     
-    void render() override;
+    void render(ApplicationPlatform* platformInstance) override;
     bool handlePhysicalButton(PhysicalButtons btnId) override;
 
     void onSelected() override;
@@ -64,7 +64,7 @@ public:
 
 
 
-    void renderNoMediaLoadedBanner();
+    
 
 private:
     void readMediaInfo(responseData_t* packet);

@@ -8,17 +8,19 @@ void NumericEditorWidget::setItem(SettingsItem* _item)
 	intermediateValue = item->getValue();
 }
 
-void NumericEditorWidget::render()
+void NumericEditorWidget::render(ApplicationPlatform* platformInstance)
 {
-	int cy = g_uiController->getClientAreaStart().y;
+	auto gfx = platformInstance->gfxInstance();
+
+	int cy = appInstance->getClientAreaStart().y;
 	
 	// Заголовок
 
 	cy += 60;
 
-	g_uiController->setTextSize(4);
+	appInstance->setTextSize(4);
 
-	int x = TFT_W / 2 - (g_uiController->getTextWidth() * strlen(item->getDescription())) / 2;
+	int x = TFT_W / 2 - (appInstance->getTextWidth() * strlen(item->getDescription())) / 2;
 
 	gfx->setCursor(x, cy + 20);
 
@@ -33,7 +35,7 @@ void NumericEditorWidget::render()
 	int xe = TFT_W - margin * 2;
 
 	cy += 20;
-	int barY = cy + g_uiController->getTextHeight() + margin;
+	int barY = cy + appInstance->getTextHeight() + margin;
 
 	gfx->drawRect(xs, barY, xe - xs, 40, RGB565_AQUA);
 	
@@ -42,7 +44,7 @@ void NumericEditorWidget::render()
 
 
 	cy += 100;
-	g_uiController->setTextSize(2);
+	appInstance->setTextSize(2);
 	gfx->setCursor(0, cy);
 
 	char temp[32];
@@ -57,12 +59,12 @@ bool NumericEditorWidget::handlePhysicalButton(PhysicalButtons btnId)
 	switch (btnId)
 	{
 	case PhysicalButtons::FUNC1:
-		g_uiController->popWidget();
+		appInstance->popWidget();
 		return true;
 	
 	case PhysicalButtons::FUNC4:
 		item->setValue(intermediateValue);
-		g_uiController->popWidget();
+		appInstance->popWidget();
 		return true;
 	case PhysicalButtons::LEFT:
 		intermediateValue -= item->getStepping();

@@ -10,8 +10,10 @@
 
 OnScreenKeyboard * kb = nullptr;
 
-vec2i getTextBounds(const char* text)
+vec2i UIController::getTextBounds(const char* text)
 {
+    auto gfx = platform->gfxInstance();
+
     int16_t x1,y1;
     uint16_t w,h;
     gfx->getTextBounds(text, 0,0, &x1,&y1,&w,&h);
@@ -21,6 +23,8 @@ vec2i getTextBounds(const char* text)
 
 void UIController::render()
 {
+    auto gfx = platform->gfxInstance();
+
     gfx->fillScreen(RGB565_BLACK);
 
     if (network->justConnected())
@@ -32,7 +36,6 @@ void UIController::render()
     if (!network->isConnected())
     {
         drawConnectingString();
-
         network->connect();
         return;
     }
@@ -41,7 +44,7 @@ void UIController::render()
     drawFunctionalButtons(1);
 
     if (topLevelWidget)
-        topLevelWidget->render();
+        topLevelWidget->render(platform);
 
     network->readData();
     
@@ -87,6 +90,8 @@ void UIController::stateSettings()
 
 void UIController::drawConnectingString()
 {
+    auto gfx = platform->gfxInstance();
+
 	char* text = "Connecting...";
 
 	gfx->setTextColor(RGB565_LIGHTCORAL);
@@ -157,6 +162,8 @@ int UIController::drawBigButton(const char* text, int x, int y, int w, uint16_t 
 	if (!text)
 		return 0;
 
+    auto gfx = platform->gfxInstance();
+
 	int margin = 4;
 
 	vec2i bounds = getTextBounds(text);
@@ -194,10 +201,13 @@ int UIController::drawBigButton(const char* text, int x, int y, int w, uint16_t 
 	return w;
 }
 
-UIController::UIController(ApplicationPlatform * platformInstance)
+UIController::UIController(ApplicationPlatform * platformInstance): platform(platformInstance)
 {
+
     static char buffer[32];
     size_t bufLen = 32;
+
+    auto gfx = platform->gfxInstance();
 
     kb = new OnScreenKeyboard(gfx, buffer, bufLen);
     network = new WifiSerialInterface("127.0.0.1", 35000);
@@ -271,8 +281,9 @@ void UIController::handlePhysicalButton(PhysicalButtons btnId)
 
 void UIController::setTextSize(int size)
 {
+
     textSize = size;
-    gfx->setTextSize(size);
+    platform->gfxInstance()->setTextSize(size);
 }
 
 const int UIController::getTextSize() const

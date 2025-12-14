@@ -58,10 +58,9 @@ class UIController
     
     
     int printTimeFormatted(int timeSeconds);
-    void drawMusicTrackName(int x,int y);
-
+    void drawMusicTrackName(ApplicationPlatform* p, int x, int y);
+      
     
-    NetworkInterface * network = nullptr;
 
     UIWidget* gaugesWidget = nullptr;
     UIWidget* tuneWidget = nullptr;
@@ -75,7 +74,7 @@ class UIController
 	int drawBigButton(const char* text, int x, int y, int w, uint16_t rectColor, uint16_t textColor, bool flash);
 
     ApplicationPlatform* platform = nullptr;
-
+    NetworkInterface* network = nullptr;
 
 public:
     UIController(ApplicationPlatform * platformInstance);
@@ -106,6 +105,8 @@ public:
 
     void onPacketReceived(responseData_t* responseData);
     void requestMediaState();
+
+    vec2i getTextBounds(const char* text);
 };
 
 

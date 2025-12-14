@@ -66,7 +66,7 @@ void WifiSerialInterface::readData()
 
 		if (bufferOffset == responseData->length)
 		{
-			g_uiController->onPacketReceived(responseData);
+			appInstance->onPacketReceived(responseData);
 			bufferOffset = 0;
 		}
 	}

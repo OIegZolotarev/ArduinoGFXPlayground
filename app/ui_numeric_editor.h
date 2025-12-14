@@ -15,7 +15,7 @@ public:
 	~NumericEditorWidget() = default;
 
 	void setItem(SettingsItem* _item);
-	void render() override;
+	void render(ApplicationPlatform* platformInstance) override;
 
 
 	bool handlePhysicalButton(PhysicalButtons btnId) override;

@@ -26,15 +26,17 @@ SettingsWidget::~SettingsWidget()
 
 }
 
-void SettingsWidget::render()
+void SettingsWidget::render(ApplicationPlatform* platformInstance)
 {
+	auto gfx = platformInstance->gfxInstance();
+
 	SettingsItem* p = items;
 
-	int cy = g_uiController->getClientAreaStart().y;
+	int cy = appInstance->getClientAreaStart().y;
 
-	g_uiController->setTextSize(4);
+	appInstance->setTextSize(4);
 
-	int x = TFT_W / 2 - (g_uiController->getTextWidth() * strlen(title)) / 2;
+	int x = TFT_W / 2 - (appInstance->getTextWidth() * strlen(title)) / 2;
 
 	gfx->setCursor(x, cy + 20);
 
@@ -44,8 +46,8 @@ void SettingsWidget::render()
 
 	int y = cy + 70;
 
-	g_uiController->setTextSize(2);
-	int h = g_uiController->getTextHeight();
+	appInstance->setTextSize(2);
+	int h = appInstance->getTextHeight();
 
 	int textStart = 10;
 	int margin = 4;
@@ -61,7 +63,7 @@ void SettingsWidget::render()
 		char temp[32];
 		p->valueDescription(temp, 32);
 
-		int valWidth = g_uiController->getTextWidth() * strlen(temp);
+		int valWidth = appInstance->getTextWidth() * strlen(temp);
 		gfx->setCursor(TFT_W - valWidth - margin - 4, y);
 		gfx->print(temp);
 
@@ -131,7 +133,7 @@ void SettingsWidget::editSelectedItem(SettingsItem* selectedItem)
 		break;
 	case SettingsItemKinds::NumericLimited:
 		numericalEditor->setItem(selectedItem);
-		g_uiController->pushWidget(numericalEditor);
+		appInstance->pushWidget(numericalEditor);
 		break;
 	case SettingsItemKinds::ChoiceWifiNetwork:
 		break;
