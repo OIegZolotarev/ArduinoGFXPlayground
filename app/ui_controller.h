@@ -107,6 +107,11 @@ public:
     void requestMediaState();
 
     vec2i getTextBounds(const char* text);
+
+    ApplicationPlatform* getPlatform()
+    {
+        return platform;
+    }
 };
 
 

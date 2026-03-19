@@ -209,8 +209,7 @@ UIController::UIController(ApplicationPlatform* platformInstance) : platform(pla
 
 	auto gfx = platform->gfxInstance();
 
-	kb = new OnScreenKeyboard(gfx, buffer, bufLen);
-	// network = new WifiSerialInterface("127.0.0.1", 35000);
+	
 
 	mediaPlayerWidget = new MediaControllerWidget();
 	settingsWidget = new SettingsWidget("System settings");

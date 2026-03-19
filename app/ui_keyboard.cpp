@@ -3,7 +3,7 @@
 
 
 
-OnScreenKeyboard::OnScreenKeyboard(Arduino_GFX* gfx, char* buffer, size_t bufLen) : gfx(gfx), buffer(buffer), bufLen(bufLen)
+OnScreenKeyboard::OnScreenKeyboard(char* buffer, size_t bufLen) : buffer(buffer), bufLen(bufLen)
 {
 	buffer[0] = '\0';
 }
@@ -13,10 +13,10 @@ bool OnScreenKeyboard::isFinished() const
 	return finished;
 }
 
-void OnScreenKeyboard::handlePhysicalButton(PhysicalButtons btn)
+bool OnScreenKeyboard::handlePhysicalButton(PhysicalButtons btn)
 {
-	if (finished) return;
-
+	if (finished) return true;
+	 
 	switch (btn)
 	{
 	case PhysicalButtons::LEFT:
@@ -58,9 +58,9 @@ void OnScreenKeyboard::handlePhysicalButton(PhysicalButtons btn)
 		break;
 	}
 
-	// ¬вод текущего символа кнопкой "стрелка" мы Ќ≈ делаем.
-	// ¬вод символа Ч отдельна€ функци€ системы.
-	// ≈сли нужно Ч можно включить, скажи.
+
+
+	return true;
 }
 
 void OnScreenKeyboard::pressCurrentKey()
@@ -76,8 +76,16 @@ void OnScreenKeyboard::pressCurrentKey()
 	}
 }
 
-void OnScreenKeyboard::draw()
+void OnScreenKeyboard::render(ApplicationPlatform * platform)
 {
+	if (isFinished())
+	{
+		finished = false;
+		appInstance->popWidget();
+		return;
+	}
+	
+	gfx = platform->gfxInstance();
 
 	gfx->setTextColor(RGB565_WHITE);
 	gfx->setTextSize(2);
@@ -92,6 +100,17 @@ void OnScreenKeyboard::draw()
 
 	// ----- 3)  лавиатура -----
 	drawKeyboard();
+}
+
+void OnScreenKeyboard::setupTopLevelButtons(struct functionalButton_s* buttons)
+{
+	UIWidget::setupTopLevelButtons(buttons);
+
+	buttons[0].description = "Cancel";
+	buttons[1].description = "Shift";
+	buttons[2].description = "Click";
+
+	buttons[3].description = "Accept";
 }
 
 const char** OnScreenKeyboard::getCurrentLayout()

@@ -1,25 +1,30 @@
 #pragma once
 
 #include <algorithm>
+#include "ui_widget.h"
 
-class OnScreenKeyboard
+class OnScreenKeyboard: public UIWidget
 {
 public:
-    OnScreenKeyboard(Arduino_GFX *gfx, char *buffer, size_t bufLen);
+    OnScreenKeyboard(char *buffer, size_t bufLen);
 
     bool isFinished() const;
-
-    // Обработка кнопок устройства
-    void handlePhysicalButton(PhysicalButtons btn);
+    
+    bool handlePhysicalButton(PhysicalButtons btn) override;
 
     // Ввод символа текущей клавиши (вызов из внешней кнопки "OK")
     void pressCurrentKey();
 
-    // Отрисовка клавиатуры
-    void draw();
+    
+    virtual void render(ApplicationPlatform* platformInstance) override;
+
+
+    void setupTopLevelButtons(struct functionalButton_s* buttons) override;
 
 private:
-    Arduino_GFX *gfx;
+
+    Arduino_GFX* gfx;
+    
     char *buffer;
     size_t bufLen;
 
@@ -84,8 +89,6 @@ private:
     // ========== ОТРИСОВКА ==========
 
     void drawKeyboard();
-
     void drawKeyChar(int x, int y, int w, int h, char c, bool active);
-
     void drawKeyLabel(int x, int y, int w, int h, const char *label, bool active);
 };

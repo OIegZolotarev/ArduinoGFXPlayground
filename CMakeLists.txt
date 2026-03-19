@@ -32,6 +32,7 @@ else()
     "app/ui_keyboard.cpp"
     "app/ui_media_player_widget.cpp"
     "app/ui_settings_widget.cpp"
+    "app/ui_wifi_network_selector.cpp"
     "app/ui_numeric_editor.cpp"
     "platform/shared/platform.h" 
 

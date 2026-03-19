@@ -30,6 +30,8 @@ PlatformPC::PlatformPC()
 		TFT_W, TFT_H
 	);
 
+	networkInterface = new WifiSerialInterface("localhost", 35000);
+
 }
 
 PlatformPC::~PlatformPC()
@@ -44,7 +46,7 @@ PlatformPC::~PlatformPC()
 
 NetworkInterface* PlatformPC::networkInterfaceInstance()
 {
-	return nullptr;
+	return networkInterface;
 }
 
 Arduino_GFX* PlatformPC::gfxInstance()

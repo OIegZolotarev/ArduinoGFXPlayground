@@ -51,13 +51,19 @@ public:
 
     virtual bool hasData() = 0;
     
-    
     virtual bool isConnected() = 0;        
     virtual void connect() = 0;
-    int  connectAttemps();
 
+    int  connectAttemps();
     bool justConnected();
     void resetConnectionAttempts();
+
+    virtual void startWifiScan() = 0;
+
+    virtual size_t numDiscoveredNetworks() = 0;
+    virtual char* getDiscoveredNetworkName(size_t networkIndex) = 0;
+
+    virtual void endWifiScan() = 0;
 
 };
 

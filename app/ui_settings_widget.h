@@ -2,6 +2,8 @@
 
 #include "ui_widget.h"
 #include "ui_numeric_editor.h"
+#include "ui_wifi_network_selector.h"
+#include "ui_keyboard.h"
 
 enum class SettingsItemKinds
 {
@@ -9,6 +11,7 @@ enum class SettingsItemKinds
 	TextPassword,
 	NumericLimited,
 	ChoiceWifiNetwork,
+
 	Unset
 };
 
@@ -33,6 +36,21 @@ public:
 	}
 
 	virtual void valueDescription(char* destBuffer, size_t bufferLength) { *destBuffer = 0; }
+
+};
+
+class WifiNetworkSetting : public SettingsItem
+{
+public:
+	WifiNetworkSetting(const char* descr) : SettingsItem(descr)
+	{
+
+	}
+
+	SettingsItemKinds kind() override
+	{
+		return SettingsItemKinds::ChoiceWifiNetwork;
+	}
 
 };
 
@@ -100,6 +118,8 @@ class SettingsWidget: public UIWidget
 	}
 
 	NumericEditorWidget* numericalEditor;
+	OnScreenKeyboard* textEditor;
+	WifiNetworkSelector* wifiNetworkSelector;
 
 	void editSelectedItem(SettingsItem* selectedItem);
 

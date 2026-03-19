@@ -17,4 +17,10 @@ public:
 
     void performServerCall(ServerCalls callid) override;
 
+
+    void startWifiScan() override;
+    size_t numDiscoveredNetworks() override;
+    char* getDiscoveredNetworkName(size_t networkIndex) override;
+    void endWifiScan() override;
+
 };

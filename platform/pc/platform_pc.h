@@ -1,6 +1,8 @@
 #include "../shared/platform.h"
 #include <SDL2/SDL.h>
 
+#include "net_wifi_serial_interface.h"
+
 
 class PlatformPC : public ApplicationPlatform
 {
@@ -22,4 +24,6 @@ private:
 
 	bool handleEvents();
 	bool running = true;
+
+	WifiSerialInterface* networkInterface = nullptr;
 };

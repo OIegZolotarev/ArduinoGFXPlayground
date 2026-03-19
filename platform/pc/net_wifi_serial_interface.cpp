@@ -81,6 +81,36 @@ void WifiSerialInterface::performServerCall(ServerCalls callId)
 	serialImpl->write({ 0xFE, 0xFF, (uint8_t)callId });
 }
 
+void WifiSerialInterface::startWifiScan()
+{
+	(void)0;
+	return;
+}
+
+size_t WifiSerialInterface::numDiscoveredNetworks()
+{
+	return 4;
+}
+
+char* WifiSerialInterface::getDiscoveredNetworkName(size_t networkIndex)
+{
+	static char* nets[4] =
+	{
+		"MindScorcher",
+		"MediaTek MT7819",
+		"KV1",
+		"KV2"
+	};
+
+	return nets[networkIndex];
+}
+
+void WifiSerialInterface::endWifiScan()
+{
+	(void)0;
+	return;
+}
+
 bool WifiSerialInterface::isConnected()
 {
 	bool r = serialImpl->isConnected();

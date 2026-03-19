@@ -1,6 +1,7 @@
 #include "ui_settings_widget.h"
 #include "ui_controller.h"
 
+char textBuffer[128];
 
 
 SettingsWidget::SettingsWidget(const char* t)
@@ -13,17 +14,21 @@ SettingsWidget::SettingsWidget(const char* t)
 	brightness->setStepping(1);
 
 	addSetting(new SettingsItem("Wi-fi password"));
-	addSetting(new SettingsItem("Wi-fi network"));
+	addSetting(new WifiNetworkSetting("Wi-fi network"));
 
 	title = t;
 	selectedItem = items;
 
 	numericalEditor = new NumericEditorWidget;
+	textEditor = new OnScreenKeyboard(textBuffer, 128);
+	wifiNetworkSelector = new WifiNetworkSelector();
+
 }
 
 SettingsWidget::~SettingsWidget()
 {
-
+	delete numericalEditor;
+	delete textEditor;
 }
 
 void SettingsWidget::render(ApplicationPlatform* platformInstance)
@@ -128,6 +133,7 @@ void SettingsWidget::editSelectedItem(SettingsItem* selectedItem)
 	{
 
 	case SettingsItemKinds::TextSimple:
+		appInstance->pushWidget(textEditor);
 		break;
 	case SettingsItemKinds::TextPassword:
 		break;
@@ -136,8 +142,10 @@ void SettingsWidget::editSelectedItem(SettingsItem* selectedItem)
 		appInstance->pushWidget(numericalEditor);
 		break;
 	case SettingsItemKinds::ChoiceWifiNetwork:
+		appInstance->pushWidget(wifiNetworkSelector);
 		break;
 	case SettingsItemKinds::Unset:
+		appInstance->pushWidget(textEditor);
 		break;
 	default:
 		break;
