@@ -69,7 +69,7 @@ public:
 	
 	int getStepping();
 
-	float constrain(float value);
+	float calculateConstrain(float value);
 
 	void valueDescription(char* destBuffer, size_t bufferLength) override
 	{

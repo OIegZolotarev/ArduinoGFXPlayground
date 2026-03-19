@@ -2,7 +2,7 @@
 #pragma once 
 
 #include "Arduino_Canvas.h"
-#include "../platform_shared/platform.h"
+#include "../platform/shared/platform.h"
 
 enum class PhysicalButtons
 {

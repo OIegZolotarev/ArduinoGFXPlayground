@@ -119,7 +119,7 @@ int MediaControllerWidget::printTimeFormatted(ApplicationPlatform* p,int interva
 		fullMinutes = 99;
 
 
-	sprintf(temp, "%0.2d:%0.2d", fullMinutes, seconds);
+	sprintf(temp, "%.2d:%.2d", fullMinutes, seconds);
 
 	gfx->print(temp);
 
@@ -233,6 +233,8 @@ void MediaControllerWidget::onNetworkPacketUpdate(responseData_t* packet)
 		break;
 	case MediaThumbnail:
 		readMediaThumbnail(packet);
+		break;
+	default:
 		break;
 	}
 }

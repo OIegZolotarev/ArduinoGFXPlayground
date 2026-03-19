@@ -1,96 +1,96 @@
 #include "Arduino_Canvas.h"
 #include "ui_controller.h"
 #include "timer.h"
-#include "net_wifi_serial_interface.h"
+
 
 #include "com_colors.h"
 #include "ui_keyboard.h"
 #include "ui_media_player_widget.h"
 #include "ui_settings_widget.h"
 
-OnScreenKeyboard * kb = nullptr;
+OnScreenKeyboard* kb = nullptr;
 
 vec2i UIController::getTextBounds(const char* text)
 {
-    auto gfx = platform->gfxInstance();
+	auto gfx = platform->gfxInstance();
 
-    int16_t x1,y1;
-    uint16_t w,h;
-    gfx->getTextBounds(text, 0,0, &x1,&y1,&w,&h);
+	int16_t x1, y1;
+	uint16_t w, h;
+	gfx->getTextBounds(text, 0, 0, &x1, &y1, &w, &h);
 
-    return vec2i{w,h};
+	return vec2i{ w,h };
 }
 
 void UIController::render()
 {
-    auto gfx = platform->gfxInstance();
+	auto gfx = platform->gfxInstance();
 
-    gfx->fillScreen(RGB565_BLACK);
+	gfx->fillScreen(RGB565_BLACK);
 
-    if (network->justConnected())
-    {
-        network->resetConnectionAttempts();
-        selectTopLevelWidget(TopLevelWidgets::Media);
-    }
+	//if (network->justConnected())
+	//{
+	//    network->resetConnectionAttempts();
+	//    selectTopLevelWidget(TopLevelWidgets::Media);
+	//}
 
-    if (!network->isConnected())
-    {
-        drawConnectingString();
-        network->connect();
-        return;
-    }
+	//if (!network->isConnected())
+	//{
+	//    drawConnectingString();
+	//    //network->connect();
+	//    return;
+	//}
 
-    setTextSize(2);
-    drawFunctionalButtons(1);
+	setTextSize(2);
+	drawFunctionalButtons(1);
 
-    if (topLevelWidget)
-        topLevelWidget->render(platform);
+	if (topLevelWidget)
+		topLevelWidget->render(platform);
 
-    network->readData();
-    
-    return;
+	//network->readData();
 
-    static unsigned long nextUpdate = 0;
+	return;
 
-    if (millis() > nextUpdate)
-    {        
-        nextUpdate = millis() + 500;
-    }
+	static unsigned long nextUpdate = 0;
 
-    if (network->hasData())
-    {
-        //uint16_t dataLength = network->readUInt16();
-        //network->readStringNullTerminated(mediaState.trackName, sizeof(mediaState.trackName));        
-        //
-        //char artist[64];
-        //network->readStringNullTerminated(artist, sizeof(artist));        
+	if (millis() > nextUpdate)
+	{
+		nextUpdate = millis() + 500;
+	}
 
-        //mediaState.trackLength = network->readUInt32();
-        //int newPosition = network->readUInt32();
+	if (network->hasData())
+	{
+		//uint16_t dataLength = network->readUInt16();
+		//network->readStringNullTerminated(mediaState.trackName, sizeof(mediaState.trackName));        
+		//
+		//char artist[64];
+		//network->readStringNullTerminated(artist, sizeof(artist));        
 
-        //// Костыль когда хост не обновляет позицию трека - обновляем только тогда когда она явно обновилась
-        //// В остальных случая позицию обновляет наш таймер.
-        //// TODO: состояние добавить передачу состояния паузы и описать протокол в network_interface.h
-        //if (mediaState.trackPositionFromHost != newPosition)
-        //{
-        //    mediaState.trackPosition = newPosition;
-        //    mediaState.trackPositionFromHost = newPosition;
-        //}
+		//mediaState.trackLength = network->readUInt32();
+		//int newPosition = network->readUInt32();
 
-        
+		//// Костыль когда хост не обновляет позицию трека - обновляем только тогда когда она явно обновилась
+		//// В остальных случая позицию обновляет наш таймер.
+		//// TODO: состояние добавить передачу состояния паузы и описать протокол в network_interface.h
+		//if (mediaState.trackPositionFromHost != newPosition)
+		//{
+		//    mediaState.trackPosition = newPosition;
+		//    mediaState.trackPositionFromHost = newPosition;
+		//}
 
-    }
+
+
+	}
 
 }
 
 void UIController::stateSettings()
 {
-    
+
 }
 
 void UIController::drawConnectingString()
 {
-    auto gfx = platform->gfxInstance();
+	auto gfx = platform->gfxInstance();
 
 	char* text = "Connecting...";
 
@@ -131,10 +131,10 @@ void UIController::drawConnectingString()
 		p++;
 	}
 
-    char temp[128];
-    sprintf(temp, "Attempt #%d", network->connectAttemps() + 1);
-    gfx->setCursor(0, TFT_H - getTextHeight());
-    gfx->print(temp);
+	char temp[128];
+	sprintf(temp, "Attempt #%d", network->connectAttemps() + 1);
+	gfx->setCursor(0, TFT_H - getTextHeight());
+	gfx->print(temp);
 
 }
 
@@ -142,7 +142,7 @@ void UIController::drawFunctionalButtons(int y)
 {
 	int x = 0;
 
-    auto items = buttons;
+	auto items = buttons;
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -162,7 +162,7 @@ int UIController::drawBigButton(const char* text, int x, int y, int w, uint16_t 
 	if (!text)
 		return 0;
 
-    auto gfx = platform->gfxInstance();
+	auto gfx = platform->gfxInstance();
 
 	int margin = 4;
 
@@ -171,8 +171,8 @@ int UIController::drawBigButton(const char* text, int x, int y, int w, uint16_t 
 	if (w < bounds.x)
 		w = bounds.x + margin * 2;
 
-    if (*text == 0)
-        return w;
+	if (*text == 0)
+		return w;
 
 	// Выравнивание кнопки посередине
 
@@ -190,9 +190,9 @@ int UIController::drawBigButton(const char* text, int x, int y, int w, uint16_t 
 	else
 		gfx->drawRect(x, y, w, bounds.y + margin * 2, finalRectColor);
 
-    // TODO: сделать это получше
-    clientAreaStart.x = 0;
-    clientAreaStart.y = bounds.y + margin * 2;
+	// TODO: сделать это получше
+	clientAreaStart.x = 0;
+	clientAreaStart.y = bounds.y + margin * 2;
 
 	gfx->setCursor(x + (w / 2 - bounds.x / 2), y + margin);
 	gfx->setTextColor(finalTextColor);
@@ -201,160 +201,164 @@ int UIController::drawBigButton(const char* text, int x, int y, int w, uint16_t 
 	return w;
 }
 
-UIController::UIController(ApplicationPlatform * platformInstance): platform(platformInstance)
+UIController::UIController(ApplicationPlatform* platformInstance) : platform(platformInstance)
 {
 
-    static char buffer[32];
-    size_t bufLen = 32;
+	static char buffer[32];
+	size_t bufLen = 32;
 
-    auto gfx = platform->gfxInstance();
+	auto gfx = platform->gfxInstance();
 
-    kb = new OnScreenKeyboard(gfx, buffer, bufLen);
-    network = new WifiSerialInterface("127.0.0.1", 35000);
+	kb = new OnScreenKeyboard(gfx, buffer, bufLen);
+	// network = new WifiSerialInterface("127.0.0.1", 35000);
 
-    mediaPlayerWidget = new MediaControllerWidget();
-    settingsWidget = new SettingsWidget("System settings");
+	mediaPlayerWidget = new MediaControllerWidget();
+	settingsWidget = new SettingsWidget("System settings");
 
-    platform = platformInstance;
+	platform = platformInstance;
+
+	selectTopLevelWidget(TopLevelWidgets::Media);
 }
 
 void UIController::selectTopLevelWidget(TopLevelWidgets id)
 {
-    for(int i = 0 ; i < 4; i++)
-    {
-        buttons[i].flags &= ~FB_HIGHLIGHT;
-    }
+	for (int i = 0; i < 4; i++)
+	{
+		buttons[i].flags &= ~FB_HIGHLIGHT;
+	}
 
-    switch (id)
-    {
-    case TopLevelWidgets::Gauges:
-        buttons[0].flags |= FB_HIGHLIGHT;
-        topLevelWidget = gaugesWidget;
-        break;
-    case TopLevelWidgets::Tune:
-        buttons[1].flags |= FB_HIGHLIGHT;
-        topLevelWidget = tuneWidget;
-        break;
-    case TopLevelWidgets::Media:
-        buttons[2].flags |= FB_HIGHLIGHT;
-        topLevelWidget = mediaPlayerWidget;
-        break;
-    case TopLevelWidgets::Settings:
-        buttons[3].flags |= FB_HIGHLIGHT;
-        topLevelWidget = settingsWidget;
-        break;
-    default:
-        break;
+	switch (id)
+	{
+	case TopLevelWidgets::Gauges:
+		buttons[0].flags |= FB_HIGHLIGHT;
+		topLevelWidget = gaugesWidget;
+		break;
+	case TopLevelWidgets::Tune:
+		buttons[1].flags |= FB_HIGHLIGHT;
+		topLevelWidget = tuneWidget;
+		break;
+	case TopLevelWidgets::Media:
+		buttons[2].flags |= FB_HIGHLIGHT;
+		topLevelWidget = mediaPlayerWidget;
+		break;
+	case TopLevelWidgets::Settings:
+		buttons[3].flags |= FB_HIGHLIGHT;
+		topLevelWidget = settingsWidget;
+		break;
+	default:
+		break;
 
-    }
+	}
 
 
-    if (topLevelWidget)
-        topLevelWidget->setupTopLevelButtons(buttons);
+	if (topLevelWidget)
+		topLevelWidget->setupTopLevelButtons(buttons);
 }
 
 
 void UIController::handlePhysicalButton(PhysicalButtons btnId)
 {
-    if (topLevelWidget && topLevelWidget->handlePhysicalButton(btnId))
-    {
-        return;
-    }
+	if (topLevelWidget && topLevelWidget->handlePhysicalButton(btnId))
+	{
+		return;
+	}
 
-    switch(btnId)    
-    {
-    case PhysicalButtons::FUNC1:
-        selectTopLevelWidget(TopLevelWidgets::Gauges);
-        break;
-    case PhysicalButtons::FUNC2:
-        selectTopLevelWidget(TopLevelWidgets::Tune);
-        break;
-    case PhysicalButtons::FUNC3:
-        selectTopLevelWidget(TopLevelWidgets::Media);
-        break;        
-    case PhysicalButtons::FUNC4:
-        selectTopLevelWidget(TopLevelWidgets::Settings);
-        break;
-    }
+	switch (btnId)
+	{
+	case PhysicalButtons::FUNC1:
+		selectTopLevelWidget(TopLevelWidgets::Gauges);
+		break;
+	case PhysicalButtons::FUNC2:
+		selectTopLevelWidget(TopLevelWidgets::Tune);
+		break;
+	case PhysicalButtons::FUNC3:
+		selectTopLevelWidget(TopLevelWidgets::Media);
+		break;
+	case PhysicalButtons::FUNC4:
+		selectTopLevelWidget(TopLevelWidgets::Settings);
+		break;
+	default:
+		break;
+	}
 }
 
 
 void UIController::setTextSize(int size)
 {
 
-    textSize = size;
-    platform->gfxInstance()->setTextSize(size);
+	textSize = size;
+	platform->gfxInstance()->setTextSize(size);
 }
 
-const int UIController::getTextSize() const
+int UIController::getTextSize() const
 {
-    return textSize;
+	return textSize;
 }
 
-const int UIController::getTextWidth() const
+int UIController::getTextWidth() const
 {
-    return textSize * 6;
+	return textSize * 6;
 }
 
-const int UIController::getTextHeight() const
+int UIController::getTextHeight() const
 {
-    return textSize * 8;
+	return textSize * 8;
 }
 
 void UIController::pushWidget(UIWidget* pWidget)
 {
-    pWidget->setParent(topLevelWidget);
-    topLevelWidget = pWidget;
-    pWidget->setupTopLevelButtons(buttons);
+	pWidget->setParent(topLevelWidget);
+	topLevelWidget = pWidget;
+	pWidget->setupTopLevelButtons(buttons);
 }
 
 void UIController::popWidget()
 {
-    if (!topLevelWidget)
-        return;
+	if (!topLevelWidget)
+		return;
 
-    auto parent = topLevelWidget->getParent();
+	auto parent = topLevelWidget->getParent();
 
-    if (parent)
-    {
-        topLevelWidget = parent;
-        parent->setupTopLevelButtons(buttons);
-    }
+	if (parent)
+	{
+		topLevelWidget = parent;
+		parent->setupTopLevelButtons(buttons);
+	}
 }
 
 void UIController::setWidget(UIWidget* pWidget)
 {
-    topLevelWidget = pWidget;
+	topLevelWidget = pWidget;
 }
 
 void UIController::onPacketReceived(responseData_t* responseData)
 {
-    ServerCalls svCall = (ServerCalls)responseData->serverCall;
+	ServerCalls svCall = (ServerCalls)responseData->serverCall;
 
-    switch (svCall)
-    {
-    case MediaInfo:
-    case MediaThumbnail:
-    case Play:
-    case Pause:
+	switch (svCall)
+	{
+	case MediaInfo:
+	case MediaThumbnail:
+	case Play:
+	case Pause:
 	case PreviousTrack:
 	case NextTrack:
 	case VolumeUp:
 	case VolumeDown:
 	case Mute:
-        mediaPlayerWidget->onNetworkPacketUpdate(responseData);            
-        break;
-    
-        
-    default:
-        break;
+		mediaPlayerWidget->onNetworkPacketUpdate(responseData);
+		break;
 
-    }
+
+	default:
+		break;
+
+	}
 }
 
 void UIController::requestMediaState()
 {
-    network->performServerCall(ServerCalls::MediaInfo);
-    network->performServerCall(ServerCalls::MediaThumbnail);
+	//network->performServerCall(ServerCalls::MediaInfo);
+	//network->performServerCall(ServerCalls::MediaThumbnail);
 }
 

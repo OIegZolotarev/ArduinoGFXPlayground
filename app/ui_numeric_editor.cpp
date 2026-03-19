@@ -68,11 +68,11 @@ bool NumericEditorWidget::handlePhysicalButton(PhysicalButtons btnId)
 		return true;
 	case PhysicalButtons::LEFT:
 		intermediateValue -= item->getStepping();
-		intermediateValue = item->constrain(intermediateValue);
+		intermediateValue = item->calculateConstrain(intermediateValue);
 		return true;
 	case PhysicalButtons::RIGHT:
 		intermediateValue += item->getStepping();
-		intermediateValue = item->constrain(intermediateValue);
+		intermediateValue = item->calculateConstrain(intermediateValue);
 		return true;
 	default:
 		break;

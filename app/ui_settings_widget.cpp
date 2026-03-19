@@ -222,7 +222,7 @@ int NumericSetting::getStepping()
 	return stepping;
 }
 
-float NumericSetting::constrain(float value)
+float NumericSetting::calculateConstrain(float value)
 {
 	if (value < limitMin)
 		return limitMin;

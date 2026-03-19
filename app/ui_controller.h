@@ -3,7 +3,7 @@
 #define TFT_W 480
 #define TFT_H 272
 
-#include "../platform_shared/platform.h"
+#include "../platform/shared/platform.h"
 
 typedef struct
 {
@@ -90,9 +90,9 @@ public:
 
     void setTextSize(int size);
 
-    const int getTextSize() const;
-    const int getTextWidth() const;
-    const int getTextHeight() const;
+    int getTextSize() const;
+    int getTextWidth() const;
+    int getTextHeight() const;
 
     const vec2i getClientAreaStart() const
     {
