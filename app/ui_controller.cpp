@@ -7,6 +7,7 @@
 #include "ui_keyboard.h"
 #include "ui_media_player_widget.h"
 #include "ui_settings_widget.h"
+#include "ui_tune_widget.h"
 
 OnScreenKeyboard* kb = nullptr;
 
@@ -213,6 +214,7 @@ UIController::UIController(ApplicationPlatform* platformInstance) : platform(pla
 
 	mediaPlayerWidget = new MediaControllerWidget();
 	settingsWidget = new SettingsWidget("System settings");
+	tuneWidget = new TuneWidget();
 
 	platform = platformInstance;
 
@@ -254,6 +256,26 @@ void UIController::selectTopLevelWidget(TopLevelWidgets id)
 		topLevelWidget->setupTopLevelButtons(buttons);
 }
 
+
+void UIController::handleTouchEvent(TouchEvents event, vec2i pt)
+{
+	if (pt.y < clientAreaStart.y && event == TouchEvents::Down)
+	{
+		uint16_t testZones[4] = {TFT_W / 4, (TFT_W / 4) * 2, (TFT_W / 4) * 3, TFT_W};
+
+		if (pt.x < testZones[0])
+			handlePhysicalButton(PhysicalButtons::FUNC1);
+		else if (pt.x < testZones[1])
+			handlePhysicalButton(PhysicalButtons::FUNC2);
+		else if (pt.x < testZones[2])
+			handlePhysicalButton(PhysicalButtons::FUNC3);
+		else if (pt.x < testZones[3])
+			handlePhysicalButton(PhysicalButtons::FUNC4);
+	}
+
+	if (topLevelWidget)
+		topLevelWidget->handleTouchEvent(event, pt);
+}
 
 void UIController::handlePhysicalButton(PhysicalButtons btnId)
 {

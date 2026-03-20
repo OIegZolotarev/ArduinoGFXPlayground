@@ -16,6 +16,7 @@ enum class PhysicalButtons
     FUNC4
 };
 
+
 class UIWidget
 {
     UIWidget* previousWidgetInStack = nullptr;
@@ -25,6 +26,7 @@ public:
 
     virtual void render(ApplicationPlatform* platformInstance) = 0;
     virtual bool handlePhysicalButton(PhysicalButtons btnId) = 0;
+    virtual void handleTouchEvent(TouchEvents event, vec2i pt) {};
 
     virtual void onSelected() {};
     virtual void onUnselected() {};

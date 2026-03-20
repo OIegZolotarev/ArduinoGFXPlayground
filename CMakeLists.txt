@@ -34,6 +34,7 @@ else()
     "app/ui_settings_widget.cpp"
     "app/ui_wifi_network_selector.cpp"
     "app/ui_numeric_editor.cpp"
+    "app/ui_tune_widget.cpp"
     "platform/shared/platform.h" 
 
     "platform/pc/timer.cpp"
@@ -44,7 +45,7 @@ else()
     "platform/pc/Arduino_GFX_SDL/src/arduino_g.cpp"
     "platform/pc/Arduino_GFX_SDL/src/canvas/arduino_canvas.cpp"    
     "platform/pc/platform_pc.cpp"  
-    "platform/pc/platform_pc.h")
+    "platform/pc/platform_pc.h" "app/ui_tune_widget.h")
 
     
     include_directories(./platform/pc)

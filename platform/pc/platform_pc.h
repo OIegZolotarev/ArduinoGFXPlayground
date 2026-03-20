@@ -17,6 +17,9 @@ public:
 
 	void setup() override;
 	void loop() override;
+
+	void submitTouchEvent(TouchEvents event, vec2i pt) override;
+
 private:
 	SDL_Window* window;
 	SDL_Renderer* renderer;
@@ -24,6 +27,7 @@ private:
 
 	bool handleEvents();
 	bool running = true;
+	bool mouseDown = false;
 
 	WifiSerialInterface* networkInterface = nullptr;
 };

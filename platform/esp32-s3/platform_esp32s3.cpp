@@ -57,6 +57,28 @@ void PlatformESP32S3::loop()
 	gfx->flush();
 }
 
+void PlatformESP32S3::submitTouchEvent(TouchEvents event, vec2i pt)
+{
+
+	switch (event)
+	{
+	case TouchEvents::Down:
+		// ESP_LOGD("TOUCH", "submitTouchEvent(): Down at [%d, %d]\n", pt.x, pt.y);
+		break;
+	case TouchEvents::Drag:
+		// ESP_LOGD("TOUCH", "submitTouchEvent(): Drag at [%d, %d]\n", pt.x, pt.y);
+		break;
+	case TouchEvents::Up:
+		// ESP_LOGD("TOUCH", "submitTouchEvent(): Up at [%d, %d]\n", pt.x, pt.y);
+		break;
+	default:
+		break;
+		
+	}
+		
+	appInstance->handleTouchEvent(event, pt);
+}
+
 bool PlatformESP32S3::handleEvents()
 {
 	pollButtons();

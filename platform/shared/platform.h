@@ -4,6 +4,19 @@
 class UIController;
 class Arduino_GFX;
 
+
+enum class TouchEvents
+{
+	Down,
+	Drag,
+	Up
+};
+
+typedef struct
+{
+	uint16_t x, y;
+} vec2i;
+
 class ApplicationPlatform
 {
 public:
@@ -15,6 +28,8 @@ public:
 	
 	virtual void setup() = 0;
 	virtual void loop() = 0;
+
+	virtual void submitTouchEvent(TouchEvents event, vec2i pt) = 0;
 };
 
 extern UIController* appInstance;

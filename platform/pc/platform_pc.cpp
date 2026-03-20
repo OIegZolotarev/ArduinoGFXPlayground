@@ -8,6 +8,8 @@ Arduino_GFX* gfx = &canvas;
 
 UIController* appInstance;
 
+#define  GLOBAL_UI_SCALE 2.0f
+
 PlatformPC::PlatformPC()
 {
 	appInstance = new UIController(this);
@@ -17,7 +19,7 @@ PlatformPC::PlatformPC()
 	window = SDL_CreateWindow(
 		"ArduinoCanvas SDL",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		TFT_W * 2, TFT_H * 2,
+		TFT_W * GLOBAL_UI_SCALE, TFT_H * GLOBAL_UI_SCALE,
 		SDL_WINDOW_SHOWN
 	);
 
@@ -85,6 +87,18 @@ void PlatformPC::loop()
 
 }
 
+void PlatformPC::submitTouchEvent(TouchEvents event, vec2i pt)
+{
+	if (pt.x > TFT_W || pt.y > TFT_H)
+	{
+		if (mouseDown)
+			appInstance->handleTouchEvent(TouchEvents::Up, {0,0});
+		return;
+	}
+
+	appInstance->handleTouchEvent(event, pt);
+}
+
 bool PlatformPC::handleEvents()
 {
 	SDL_Event event;
@@ -94,6 +108,70 @@ bool PlatformPC::handleEvents()
 		switch (event.type) {
 		case SDL_QUIT:
 			return false;
+		case SDL_WINDOWEVENT:
+		{
+			if (event.window.event == SDL_WINDOWEVENT_LEAVE)
+			{
+				if (mouseDown)
+				{
+					mouseDown = false;
+
+					// можно взять последние координаты или текущие
+					vec2i pt{
+						static_cast<uint16_t>(0),
+						static_cast<uint16_t>(0)
+					};
+
+					submitTouchEvent(TouchEvents::Up, pt);
+				}
+			}
+			break;
+		}
+		case SDL_MOUSEBUTTONDOWN:
+		{
+			if (event.button.button == SDL_BUTTON_LEFT)
+			{
+				mouseDown = true;
+
+				vec2i pt{
+					static_cast<uint16_t>(event.button.x / GLOBAL_UI_SCALE),
+					static_cast<uint16_t>(event.button.y / GLOBAL_UI_SCALE)
+				};
+
+				submitTouchEvent(TouchEvents::Down, pt);
+			}
+			break;
+		}
+
+		case SDL_MOUSEMOTION:
+		{
+			if (mouseDown) 
+			{
+				vec2i pt{
+					static_cast<uint16_t>(event.motion.x / GLOBAL_UI_SCALE),
+					static_cast<uint16_t>(event.motion.y / GLOBAL_UI_SCALE)
+				};
+
+				submitTouchEvent(TouchEvents::Drag, pt);
+			}
+			break;
+		}
+
+		case SDL_MOUSEBUTTONUP:
+		{
+			if (event.button.button == SDL_BUTTON_LEFT)
+			{
+				mouseDown = false;
+
+				vec2i pt{
+					static_cast<uint16_t>(event.button.x),
+					static_cast<uint16_t>(event.button.y)
+				};
+
+				submitTouchEvent(TouchEvents::Up, pt);
+			}
+			break;
+		}
 		case SDL_KEYDOWN:
 			// Handle keyboard key down event
 			// Example: if (e.key.keysym.sym == SDLK_ESCAPE) quit = true;
@@ -117,6 +195,8 @@ bool PlatformPC::handleEvents()
 
 			break;
 		}
+
+
 	}
 
 	return true;

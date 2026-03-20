@@ -59,12 +59,7 @@ public:
 
     void updateTrackState(const char* trackName, int trackPos, int trackLength);
 
-    void onNetworkPacketUpdate(responseData_t* packet) override;
-
-
-
-
-    
+    void onNetworkPacketUpdate(responseData_t* packet) override;    
 
 private:
     void readMediaInfo(responseData_t* packet);

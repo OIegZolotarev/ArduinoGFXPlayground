@@ -5,10 +5,7 @@
 
 #include "../platform/shared/platform.h"
 
-typedef struct
-{
-    int x,y;
-} vec2i;
+
 
 typedef struct functionalButton_s
 {
@@ -82,6 +79,7 @@ public:
     functionalButton_t* getFunctionalButtons() { return buttons; }
     TopLevelWidgets currentState() { return state; }
 
+    void handleTouchEvent(TouchEvents event, vec2i pt);
     void handlePhysicalButton(PhysicalButtons btnId);
     void render();
         

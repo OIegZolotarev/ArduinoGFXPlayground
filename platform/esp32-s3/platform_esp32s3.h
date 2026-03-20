@@ -12,6 +12,9 @@ public:
 
 	void setup() override;
 	void loop() override;
+
+	void submitTouchEvent(TouchEvents event, vec2i pt) override;
+
 private:
 
 	bool handleEvents();

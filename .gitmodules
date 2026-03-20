@@ -7,3 +7,6 @@
 [submodule "platform/Arduino_GFX"]
 	path = platform/Arduino_GFX
 	url = https://github.com/moononournation/Arduino_GFX.git
+[submodule "platform/TouchLib"]
+	path = platform/TouchLib
+	url = https://github.com/mmMicky/TouchLib

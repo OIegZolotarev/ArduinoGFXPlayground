@@ -306,9 +306,9 @@ void MediaControllerWidget::readMediaThumbnail(responseData_t * packet)
 	int numLines = r.readUInt8();
 
 
-	FILE* fp = fopen("C:/temp/thumb_slice.raw", "wb");
+	/*FILE* fp = fopen("C:/temp/thumb_slice.raw", "wb");
 	fwrite(packet, packet->length, 1, fp);
-	fclose(fp);
+	fclose(fp);*/
 
 	for (int i = lineIndex; i < (lineIndex + numLines); i++)
 	{
